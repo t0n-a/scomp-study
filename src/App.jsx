@@ -5,9 +5,11 @@ import Exam from './pages/Exam.jsx'
 import Flashcards from './pages/Flashcards.jsx'
 import CodeLab from './pages/CodeLab.jsx'
 import Guides from './pages/Guides.jsx'
+import Course from './pages/Course.jsx'
 
 const TABS = [
   { id: 'home', label: '~' },
+  { id: 'course', label: './curso' },
   { id: 'drill', label: './drill' },
   { id: 'exam', label: './exame' },
   { id: 'flashcards', label: './flashcards' },
@@ -27,8 +29,9 @@ export default function App() {
   // via a useEffect keyed on this object identity.
   const [labRequest, setLabRequest] = useState(null)
 
-  function openCodeLab(templateFile) {
-    setLabRequest({ templateFile, nonce: Date.now() })
+  function openCodeLab(req) {
+    const base = typeof req === 'string' ? { templateFile: req } : { ...req }
+    setLabRequest({ ...base, nonce: Date.now() })
     setTab('codelab')
   }
 
@@ -59,6 +62,9 @@ export default function App() {
       */}
       <div className={tab === 'home' ? '' : 'tab-hidden'}>
         <Home onNavigate={setTab} />
+      </div>
+      <div className={tab === 'course' ? '' : 'tab-hidden'}>
+        <Course onOpenCodeLab={openCodeLab} />
       </div>
       <div className={tab === 'drill' ? '' : 'tab-hidden'}>
         <Drill />

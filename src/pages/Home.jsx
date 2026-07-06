@@ -46,6 +46,10 @@ export default function Home({ onNavigate }) {
           <strong>guias</strong>
           <span>Analogias e acrónimos por tema</span>
         </button>
+        <button className="quick-link" onClick={() => onNavigate('course')}>
+          <strong>curso</strong>
+          <span>Do zero ao Grupo II, lição a lição</span>
+        </button>
       </div>
 
       <h2>Progresso por tema</h2>

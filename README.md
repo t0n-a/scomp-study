@@ -12,6 +12,7 @@ guias de teoria com analogias, e um Code Lab que compila e corre C de verdade no
 | Separador | O que faz |
 |---|---|
 | `~` (home) | Progresso por tema, temas fracos, histórico de simulações |
+| `./curso` | **Começa aqui se nunca tocaste em SCOMP**: 16 lições guiadas (8 de pipes, 8 de threads) que levam do fork() até aos enunciados reais do Grupo II — teoria + exercício das PLs + checklist + solução verificada, com integração com o Code Lab |
 | `./drill` | Perguntas de escolha múltipla com feedback imediato, filtráveis por tema. Errar abre um popup de estudo: explicação, link para o slide exato da teoria e o guia do tema |
 | `./exame` | Simulação completa: Grupo I (10 MCQ, +0.8 / −0.8÷3 / 0) + Grupo II (2 enunciados práticos reais, autoavaliados por rubrica) → nota /20 |
 | `./flashcards` | 53 cartões com repetição pesada no que erras (Outra vez / Sei esta). Muitos terminam com a mnemónica 🧠 do guia correspondente |

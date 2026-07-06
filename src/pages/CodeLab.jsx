@@ -13,6 +13,11 @@ export default function CodeLab({ pendingLoad }) {
 
   useEffect(() => {
     if (!pendingLoad) return
+    if (typeof pendingLoad.code === 'string') {
+      setCode(pendingLoad.code)
+      setResult(null)
+      return
+    }
     const t = templates.find((t) => t.id === pendingLoad.templateFile)
     if (t) {
       setCode(t.code)

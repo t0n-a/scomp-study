@@ -4,6 +4,7 @@ const ATTEMPTS_KEY = 'scomp:attempts'
 const EXAMS_KEY = 'scomp:exams'
 const CARD_WEIGHTS_KEY = 'scomp:cardWeights'
 const G2_ATTEMPTS_KEY = 'scomp:g2attempts'
+const COURSE_DONE_KEY = 'scomp:courseDone'
 
 function readJson(key, fallback) {
   try {
@@ -96,4 +97,22 @@ export function bumpCardWeight(cardId, delta) {
   weights[cardId] = next
   writeJson(CARD_WEIGHTS_KEY, weights)
   return weights
+}
+
+// ---- Curso guiado ----
+// Shape: { [lessonId]: true }
+
+export function getCourseDone() {
+  return readJson(COURSE_DONE_KEY, {})
+}
+
+export function toggleCourseDone(lessonId) {
+  const done = getCourseDone()
+  if (done[lessonId]) {
+    delete done[lessonId]
+  } else {
+    done[lessonId] = true
+  }
+  writeJson(COURSE_DONE_KEY, done)
+  return done
 }
