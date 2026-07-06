@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import flashcards from '../data/flashcards.json'
 import TheoryRefs from '../components/TheoryRefs.jsx'
 import { getCardWeights, bumpCardWeight } from '../utils/storage.js'
@@ -61,9 +61,19 @@ export default function Flashcards() {
     setFlipped(false)
   }
 
+  // All tabs stay mounted (App hides them with CSS), so this global listener
+  // is alive even when another tab is visible. Guard on two things: the event
+  // must not come from a typing/interactive element (Code Lab's textarea!),
+  // and this page must actually be visible (offsetParent is null inside a
+  // display:none ancestor).
+  const pageRef = useRef(null)
   useEffect(() => {
     function onKey(e) {
-      if (e.code === 'Space' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+      const tag = e.target.tagName
+      if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      if (e.target.isContentEditable) return
+      if (!pageRef.current || pageRef.current.offsetParent === null) return
+      if (e.code === 'Space') {
         e.preventDefault()
         flip()
       }
@@ -73,7 +83,7 @@ export default function Flashcards() {
   }, [flip])
 
   return (
-    <div className="page">
+    <div className="page" ref={pageRef}>
       <h1>flashcards</h1>
       <div className="topic-filter">
         {TOPICS.map((t) => (
