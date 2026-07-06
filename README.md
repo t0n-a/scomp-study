@@ -31,8 +31,9 @@ Todo o progresso (tentativas, notas de simulação, pesos dos flashcards) fica n
   wsl --install -d Ubuntu        # se ainda não tens WSL
   wsl sudo apt update; wsl sudo apt install -y gcc
   ```
-Os PDFs das teóricas e das TPs já vêm no repo (`public/pdfs/`) — os links "Teoria:"
-funcionam logo a seguir ao clone. Por serem material da cadeira, **mantém o repo privado**.
+Está tudo incluído no repo: slides das teóricas, TPs e PLs (`public/pdfs/` — os links
+"Teoria:" funcionam logo a seguir ao clone) e os exames anteriores + reference sheet
+(`exames/`). Por ser material da cadeira, **mantém o repo privado**.
 
 ## Como correr
 
@@ -66,6 +67,7 @@ src/
     guides/*.md            # guias de teoria; 1.ª linha: <!-- topic: X | title: Y -->
 vite.config.js             # plugin /api/compile: escreve .lab/prog.c e chama wsl gcc
 patterns/                  # soluções-ouro comentadas dos 3 arquétipos de Grupo II + notas + plano de treino
+exames/                    # PDFs dos exames anteriores + exame modelo + reference sheet do exame
 docs/theory-map.md         # mapa slides→temas→páginas usado nas referências de teoria
 ```
 
