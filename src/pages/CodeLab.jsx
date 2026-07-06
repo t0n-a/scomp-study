@@ -1,5 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
 import templates from '../data/labTemplates.json'
+import { diffLines } from '../utils/diff'
+import '../styles/diff.css'
+
+// Templates-gold (soluções de referência) vivem em patterns/ na raiz do repo,
+// fora de src/ — o glob com ?raw funciona porque o Vite permite import de
+// ficheiros dentro da raiz do projeto, mesmo fora de src/.
+const goldModules = import.meta.glob('../../patterns/template-*.c', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+
+const GOLD_LABELS = {
+  A: 'A — pipes',
+  B: 'B — leitores-escritores',
+  C: 'C — produtor-consumidor',
+}
+
+const goldTemplates = Object.entries(goldModules)
+  .map(([filePath, code]) => {
+    const match = filePath.match(/template-([A-C])-/)
+    const letter = match ? match[1] : '?'
+    return { id: letter, label: GOLD_LABELS[letter] || letter, code }
+  })
+  .sort((a, b) => a.id.localeCompare(b.id))
 
 // pendingLoad: optional { templateFile, nonce } set by App when another tab
 // (e.g. Exam's "Abrir no Code Lab") asks to load a specific template here.
@@ -9,6 +34,8 @@ export default function CodeLab({ pendingLoad }) {
   const [stdin, setStdin] = useState('')
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState(null)
+  const [compareId, setCompareId] = useState(goldTemplates[0]?.id || '')
+  const [diffRows, setDiffRows] = useState(null)
   const textareaRef = useRef(null)
 
   useEffect(() => {
@@ -16,12 +43,14 @@ export default function CodeLab({ pendingLoad }) {
     if (typeof pendingLoad.code === 'string') {
       setCode(pendingLoad.code)
       setResult(null)
+      setDiffRows(null)
       return
     }
     const t = templates.find((t) => t.id === pendingLoad.templateFile)
     if (t) {
       setCode(t.code)
       setResult(null)
+      setDiffRows(null)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingLoad])
@@ -47,7 +76,14 @@ export default function CodeLab({ pendingLoad }) {
     if (t) {
       setCode(t.code)
       setResult(null)
+      setDiffRows(null)
     }
+  }
+
+  function handleCompare() {
+    const gold = goldTemplates.find((t) => t.id === compareId)
+    if (!gold) return
+    setDiffRows(diffLines(code, gold.code))
   }
 
   async function compile(run) {
@@ -122,6 +158,22 @@ export default function CodeLab({ pendingLoad }) {
         {busy && <span className="muted">A compilar…</span>}
       </div>
 
+      <div className="diff-controls">
+        <label>
+          Comparar com:{' '}
+          <select value={compareId} onChange={(e) => setCompareId(e.target.value)}>
+            {goldTemplates.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button className="btn" onClick={handleCompare}>
+          Comparar
+        </button>
+      </div>
+
       {result && (
         <div className="lab-output">
           {result.error && <div className="lab-error">Erro: {result.error}</div>}
@@ -154,6 +206,39 @@ export default function CodeLab({ pendingLoad }) {
               <pre className="output-body">{result.runOutput || '(sem output)'}</pre>
             </div>
           )}
+        </div>
+      )}
+
+      {diffRows && (
+        <div className="diff-panel">
+          <div className="diff-header">
+            <div className="diff-summary">
+              <span className="diff-summary-counts">
+                {diffRows.filter((r) => r.type === 'del' || r.type === 'mod').length} linhas só no
+                teu código · {diffRows.filter((r) => r.type === 'add' || r.type === 'mod').length}{' '}
+                linhas só no template
+              </span>
+              <p className="diff-summary-hint muted">
+                diferenças ≠ erros — compara a ESTRUTURA (pipes antes do fork, closes,
+                waits/joins), não o texto
+              </p>
+            </div>
+            <button className="btn" onClick={() => setDiffRows(null)}>
+              Fechar comparação
+            </button>
+          </div>
+          <div className="diff-columns">
+            <div>o teu código</div>
+            <div>template</div>
+          </div>
+          <div className="diff-scroll">
+            {diffRows.map((row, i) => (
+              <div key={i} className={`diff-row diff-row-${row.type}`}>
+                <div className="diff-cell diff-cell-left">{row.left ?? ''}</div>
+                <div className="diff-cell diff-cell-right">{row.right ?? ''}</div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

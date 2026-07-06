@@ -56,6 +56,18 @@ export function topicStats(questions) {
   return stats
 }
 
+// Set of question ids whose most recent attempt was incorrect. Used by the
+// drill's "só erradas" filter to build a review pool.
+export function lastAttemptWrongIds() {
+  const attempts = getAttempts()
+  const ids = new Set()
+  for (const id of Object.keys(attempts)) {
+    const hist = attempts[id]
+    if (hist.length > 0 && hist[hist.length - 1].correct === false) ids.add(id)
+  }
+  return ids
+}
+
 // ---- Exam history ----
 // Shape: [{ ts, score, correct, incorrect, blank, total }]
 

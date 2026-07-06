@@ -1,0 +1,140 @@
+/* ---- Traços de escalonamento ---- */
+
+.tracer-table {
+  border-collapse: collapse;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 14px 0;
+}
+
+.tracer-table th,
+.tracer-table td {
+  text-align: left;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tracer-table tr:last-child td {
+  border-bottom: none;
+}
+
+.tracer-table th {
+  font-family: var(--mono);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tracer-mono {
+  font-family: var(--mono);
+}
+
+.tick-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 16px 0;
+}
+
+.tick-cell {
+  font-family: var(--mono);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 38px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.tick-label {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.tick-value {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.tick-current {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.tick-good {
+  background: var(--good-bg);
+  border-color: var(--good);
+}
+
+.tick-good .tick-value {
+  color: var(--good);
+}
+
+.tick-bad {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+}
+
+.tick-bad .tick-value {
+  color: var(--bad);
+}
+
+.tracer-answer-row {
+  flex-wrap: wrap;
+}
+
+.tracer-feedback {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.tracer-feedback p {
+  margin: 0 0 6px;
+}
+
+.tracer-feedback p:last-child {
+  margin-bottom: 0;
+}
+
+.tracer-feedback-good {
+  border-color: var(--good);
+  background: var(--good-bg);
+  color: var(--text);
+}
+
+.tracer-feedback-bad {
+  border-color: var(--bad);
+  background: var(--bad-bg);
+  color: var(--text);
+}
+
+.tracer-solution {
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+
+.tracer-error {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--bad);
+  background: var(--bad-bg);
+  color: var(--text);
+}
+
+@media (max-width: 480px) {
+  .tick-cell {
+    width: 32px;
+    height: 40px;
+  }
+}

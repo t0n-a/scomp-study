@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import questions from '../data/questions.json'
 import QuestionView from '../components/QuestionView.jsx'
 import WrongAnswerModal from '../components/WrongAnswerModal.jsx'
-import { recordAttempt } from '../utils/storage.js'
+import { recordAttempt, lastAttemptWrongIds } from '../utils/storage.js'
 import { TOPICS, TOPIC_LABELS, shuffle } from '../utils/misc.js'
 
 export default function Drill() {
@@ -12,12 +12,17 @@ export default function Drill() {
   const [choice, setChoice] = useState(null)
   const [showWrongModal, setShowWrongModal] = useState(false)
   const [score, setScore] = useState({ correct: 0, total: 0 })
+  const [wrongOnly, setWrongOnly] = useState(false)
+  // Snapshot of "last attempt was wrong" ids. Attempts live in localStorage,
+  // not React state, so we only refresh this on toggle/next — never mid-question.
+  const [wrongSet, setWrongSet] = useState(() => lastAttemptWrongIds())
 
   const pool = useMemo(
     () => order
       .map((id) => questions.find((q) => q.id === id))
-      .filter((q) => q && selectedTopics.has(q.topic)),
-    [order, selectedTopics]
+      .filter((q) => q && selectedTopics.has(q.topic))
+      .filter((q) => !wrongOnly || wrongSet.has(q.id)),
+    [order, selectedTopics, wrongOnly, wrongSet]
   )
 
   const current = pool[pos % (pool.length || 1)]
@@ -29,6 +34,14 @@ export default function Drill() {
       else next.add(topic)
       return next
     })
+    setPos(0)
+    setChoice(null)
+    setShowWrongModal(false)
+  }
+
+  function toggleWrongOnly() {
+    setWrongOnly((prev) => !prev)
+    setWrongSet(lastAttemptWrongIds())
     setPos(0)
     setChoice(null)
     setShowWrongModal(false)
@@ -46,6 +59,9 @@ export default function Drill() {
   function next() {
     setChoice(null)
     setShowWrongModal(false)
+    // Refresh the wrong-set snapshot so a question just answered correctly
+    // drops out of the "só erradas" pool on the next pass.
+    setWrongSet(lastAttemptWrongIds())
     if (pos + 1 >= pool.length) {
       // Reshuffle for a fresh pass.
       setOrder(shuffle(questions.map((q) => q.id)))
@@ -69,6 +85,13 @@ export default function Drill() {
             {TOPIC_LABELS[t]}
           </label>
         ))}
+        <label
+          className={`chip ${wrongOnly ? 'chip-on' : ''}`}
+          style={{ marginLeft: 'auto' }}
+        >
+          <input type="checkbox" checked={wrongOnly} onChange={toggleWrongOnly} />
+          só erradas
+        </label>
       </div>
 
       <div className="session-score">
@@ -79,7 +102,11 @@ export default function Drill() {
       </div>
 
       {pool.length === 0 ? (
-        <p className="muted">Nenhuma pergunta corresponde aos temas selecionados.</p>
+        <p className="muted">
+          {wrongOnly
+            ? 'Nada por rever — não tens perguntas com a última tentativa errada nos temas escolhidos. 🎉'
+            : 'Nenhuma pergunta corresponde aos temas selecionados.'}
+        </p>
       ) : (
         <>
           <QuestionView

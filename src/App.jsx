@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Home from './pages/Home.jsx'
 import Drill from './pages/Drill.jsx'
+import Tracer from './pages/Tracer.jsx'
 import Exam from './pages/Exam.jsx'
 import Flashcards from './pages/Flashcards.jsx'
 import CodeLab from './pages/CodeLab.jsx'
@@ -11,6 +12,7 @@ const TABS = [
   { id: 'home', label: '~' },
   { id: 'course', label: './curso' },
   { id: 'drill', label: './drill' },
+  { id: 'tracer', label: './traços' },
   { id: 'exam', label: './exame' },
   { id: 'flashcards', label: './flashcards' },
   { id: 'codelab', label: './lab' },
@@ -68,6 +70,9 @@ export default function App() {
       </div>
       <div className={tab === 'drill' ? '' : 'tab-hidden'}>
         <Drill />
+      </div>
+      <div className={tab === 'tracer' ? '' : 'tab-hidden'}>
+        <Tracer />
       </div>
       <div className={tab === 'exam' ? '' : 'tab-hidden'}>
         <Exam onOpenCodeLab={openCodeLab} />

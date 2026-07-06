@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import questions from '../data/questions.json'
 import grupo2 from '../data/grupo2.json'
 import QuestionView from '../components/QuestionView.jsx'
@@ -11,6 +11,7 @@ import {
   recordG2Attempt,
 } from '../utils/storage.js'
 import { shuffle } from '../utils/misc.js'
+import '../styles/exam-extra.css'
 
 const EXAM_SIZE = 10
 const POINTS_CORRECT = 0.8
@@ -71,6 +72,17 @@ function questionScore(question, answer) {
   return question.points * weighted
 }
 
+const G1_LIMIT_OPTIONS = [20, 25, 30]
+
+// Format seconds as "M:SS", with a leading − for negative values.
+function formatClock(totalSeconds) {
+  const sign = totalSeconds < 0 ? '−' : ''
+  const abs = Math.abs(totalSeconds)
+  const m = Math.floor(abs / 60)
+  const s = abs % 60
+  return `${sign}${m}:${String(s).padStart(2, '0')}`
+}
+
 export default function Exam({ onOpenCodeLab }) {
   const [phase, setPhase] = useState('start') // start | g1 | g2 | done
   const [examQs, setExamQs] = useState([])
@@ -83,6 +95,18 @@ export default function Exam({ onOpenCodeLab }) {
   const [g2Answers, setG2Answers] = useState([])
   const [finalRecord, setFinalRecord] = useState(null)
 
+  const [g1LimitMin, setG1LimitMin] = useState(25) // minutes, or null for "sem limite"
+  const [g1Elapsed, setG1Elapsed] = useState(0) // seconds elapsed since Grupo I started
+
+  // Tick the Grupo I clock only while phase is 'g1'; clean up on phase change/unmount.
+  useEffect(() => {
+    if (phase !== 'g1') return
+    const id = setInterval(() => {
+      setG1Elapsed((s) => s + 1)
+    }, 1000)
+    return () => clearInterval(id)
+  }, [phase])
+
   function start() {
     setExamQs(pickExamQuestions())
     setAnswers([])
@@ -92,6 +116,7 @@ export default function Exam({ onOpenCodeLab }) {
     setG2Qs([])
     setG2Answers([])
     setFinalRecord(null)
+    setG1Elapsed(0)
     setPhase('g1')
   }
 
@@ -120,7 +145,17 @@ export default function Exam({ onOpenCodeLab }) {
       if (a !== null) recordAttempt(q.id, a === q.correctIndex)
     })
     const score = Math.max(0, correct * POINTS_CORRECT + incorrect * POINTS_INCORRECT)
-    const res = { ts: Date.now(), score, correct, incorrect, blank, total: examQs.length }
+    const g1Limit = g1LimitMin === null ? null : g1LimitMin * 60
+    const res = {
+      ts: Date.now(),
+      score,
+      correct,
+      incorrect,
+      blank,
+      total: examQs.length,
+      g1Seconds: g1Elapsed,
+      g1Limit,
+    }
     setAnswers(finalAnswers)
     setG1Result(res)
 
@@ -182,6 +217,9 @@ export default function Exam({ onOpenCodeLab }) {
       incorrect: g1Result.incorrect,
       blank: g1Result.blank,
       total: g1Result.total,
+      // Timer info — absent on records created before this feature existed.
+      g1Seconds: g1Result.g1Seconds,
+      g1Limit: g1Result.g1Limit,
       // Grupo II — absent on records created before this feature existed.
       g2: {
         questions: questionsResult,
@@ -219,6 +257,25 @@ export default function Exam({ onOpenCodeLab }) {
         {grupo2.length === 0 && (
           <p className="muted">Ainda não há perguntas de Grupo II disponíveis.</p>
         )}
+        <div className="g1-limit-picker">
+          <label>
+            Tempo para o Grupo I:{' '}
+            <select
+              value={g1LimitMin === null ? 'none' : g1LimitMin}
+              onChange={(e) => {
+                const v = e.target.value
+                setG1LimitMin(v === 'none' ? null : Number(v))
+              }}
+            >
+              {G1_LIMIT_OPTIONS.map((min) => (
+                <option key={min} value={min}>
+                  {min} min
+                </option>
+              ))}
+              <option value="none">sem limite</option>
+            </select>
+          </label>
+        </div>
         <button className="btn btn-primary" onClick={start}>
           Começar exame
         </button>
@@ -228,11 +285,22 @@ export default function Exam({ onOpenCodeLab }) {
 
   if (phase === 'g1') {
     const current = examQs[pos]
+    const limitSeconds = g1LimitMin === null ? null : g1LimitMin * 60
+    const remaining = limitSeconds === null ? null : limitSeconds - g1Elapsed
+    const timedOut = remaining !== null && remaining <= 0
     return (
       <div className="page">
         <h1>exame — Grupo I</h1>
         <div className="session-score">
-          Pergunta {pos + 1} de {examQs.length}
+          Pergunta {pos + 1} de {examQs.length}{' '}
+          <span className={timedOut ? 'g1-timer g1-timer-bad' : 'g1-timer'}>
+            ⏱ {formatClock(remaining === null ? g1Elapsed : remaining)}
+          </span>
+          {timedOut && (
+            <span className="muted g1-timeout-msg">
+              tempo esgotado — no exame real tinhas entregue
+            </span>
+          )}
         </div>
         <QuestionView
           question={current}
@@ -352,6 +420,17 @@ export default function Exam({ onOpenCodeLab }) {
   // done
   const g2Total = finalRecord.g2.totalPoints
   const denom = 8 + g2Total
+
+  // "Valia a pena responder?" — presentational only, doesn't touch scoring logic.
+  const pontosGanhos = finalRecord.correct * POINTS_CORRECT
+  const pontosPerdidos = finalRecord.incorrect * (0.8 / 3)
+  const scoreAlt = finalRecord.correct * POINTS_CORRECT
+  const verdict =
+    finalRecord.incorrect > 0 && scoreAlt > finalRecord.score
+      ? `As erradas custaram-te ${(scoreAlt - finalRecord.score).toFixed(2)} pts — em caso de dúvida real (<25% de certeza), vale mais deixar em branco.`
+      : 'As tuas respostas arriscadas compensaram.'
+  const hasTimeInfo = finalRecord.g1Seconds !== undefined && finalRecord.g1Seconds !== null
+
   return (
     <div className="page">
       <h1>exame — resultado</h1>
@@ -367,6 +446,28 @@ export default function Exam({ onOpenCodeLab }) {
           {g1Result.correct} certas · {g1Result.incorrect} erradas · {g1Result.blank} em branco
         </div>
       </div>
+
+      <div className="g1-strategy">
+        <h2>Estratégia do Grupo I</h2>
+        <div className="g1-strategy-line">Pontos ganhos pelas certas: +{pontosGanhos.toFixed(2)}</div>
+        <div className="g1-strategy-line">Pontos perdidos pelas erradas: −{pontosPerdidos.toFixed(2)}</div>
+        <div className="g1-strategy-line">
+          Se tivesses deixado as erradas em branco: {scoreAlt.toFixed(2)}
+        </div>
+        {hasTimeInfo && (
+          <div className="g1-strategy-line">
+            {finalRecord.g1Limit ? (
+              <>
+                Usaste {formatClock(finalRecord.g1Seconds)} dos {formatClock(finalRecord.g1Limit)}
+              </>
+            ) : (
+              <>Usaste {formatClock(finalRecord.g1Seconds)} (sem limite definido)</>
+            )}
+          </div>
+        )}
+        <div className="g1-strategy-verdict">{verdict}</div>
+      </div>
+
       <button className="btn btn-primary" onClick={start}>
         Novo exame
       </button>

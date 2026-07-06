@@ -1,0 +1,27 @@
+.g1-timer {
+  font-family: var(--mono);
+}
+
+.g1-timer-bad {
+  color: var(--bad);
+  font-weight: 700;
+}
+
+.g1-timeout-msg {
+  margin-left: 6px;
+}
+
+.g1-strategy {
+  margin: 16px 0;
+}
+
+.g1-strategy-line {
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  margin: 4px 0;
+}
+
+.g1-strategy-verdict {
+  margin-top: 8px;
+  font-weight: 600;
+}
