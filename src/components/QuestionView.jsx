@@ -10,6 +10,7 @@ export default function QuestionView({ question, selected, revealed, onSelect })
       <div className="question-meta">
         <span className="badge">{question.topic}</span>
         <span className="question-source">{question.source}</span>
+        {question.timesSeen >= 2 && <span className="badge">caiu {question.timesSeen}×</span>}
       </div>
       <p className="question-text">{question.question}</p>
       {question.code && <pre className="code-block">{question.code}</pre>}
