@@ -1,0 +1,22 @@
+[
+  {
+    "id": "hello",
+    "name": "Hello world (fork/pipe includes)",
+    "code": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n\nint main(void) {\n    printf(\"hello\\n\");\n    return 0;\n}\n"
+  },
+  {
+    "id": "template-A-pipes.c",
+    "name": "Esqueleto A — processos + pipes (escreve tu!)",
+    "code": "/* Arquétipo A: pai distribui/recolhe via pipes, N filhos trabalham.\n * Escreve a solução DE MEMÓRIA. Checklist no fim do ficheiro.\n */\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n\n#define N 3\n\n/* TODO: struct do pedido (leva o índice do filho!) e da resposta */\n\nint main(void) {\n    /* TODO: criar pipes ANTES do fork (pedido partilhado + 1 resposta por filho) */\n\n    /* TODO: fork dos N filhos; cada filho fecha o que não usa */\n\n    /* TODO: filho: escreve pedido(s), lê resposta do SEU pipe, sai */\n\n    /* TODO: pai: fecha pontas não usadas, lê pedidos até EOF, responde a fd[i] */\n\n    /* TODO: wait() por todos os filhos */\n    return 0;\n}\n\n/* CHECKLIST: pipes antes do fork | fechar pontas não usadas em TODOS\n * | pedido leva índice | pai lê até EOF (todos os write-ends fechados)\n * | wait por todos | structs inteiras no read/write */\n"
+  },
+  {
+    "id": "template-B-readers-writers.c",
+    "name": "Esqueleto B — leitores/escritores (escreve tu!)",
+    "code": "/* Arquétipo B: leitores concorrentes com prioridade, escritores exclusivos.\n * Invariante: 1º leitor tranca a 'sala', último leitor destranca.\n */\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <pthread.h>\n#include <time.h>\n\n#define N_WRITERS 2\n#define M_READERS 3\n\n/* TODO: struct partilhada na heap (duas strings, read_count, ...) */\n\n/* TODO: mutex_rc (protege read_count) + mutex_data (a 'sala') */\n\nvoid *reader(void *arg) {\n    /* TODO: lock rc; read_count++; se ==1 lock data; unlock rc\n     * ... ler e imprimir ...\n     * lock rc; read_count--; se ==0 unlock data; unlock rc */\n    return NULL;\n}\n\nvoid *writer(void *arg) {\n    /* TODO: lock data; escrever ID + hora; imprimir; unlock data */\n    return NULL;\n}\n\nint main(void) {\n    /* TODO: malloc da struct, criar threads, join, free, destroy */\n    return 0;\n}\n\n/* CHECKLIST: contagem lida DENTRO do lock | ids por array (nunca &i)\n * | joins todos | free + destroy | printf do count sob mutex_rc */\n"
+  },
+  {
+    "id": "template-C-producer-consumer.c",
+    "name": "Esqueleto C — produtor/consumidor condvars (escreve tu!)",
+    "code": "/* Arquétipo C: buffer circular limitado, mutex + 2 condvars.\n * Invariantes: produz se count<SIZE, consome se count>0. WHILE à volta do wait!\n */\n#include <stdio.h>\n#include <stdlib.h>\n#include <pthread.h>\n\n#define N_PRODUCERS 2\n#define N_CONSUMERS 1\n#define BUFFER_SIZE 10\n#define ITEMS_PER_PRODUCER 40\n\n/* TODO: item struct {producer_id, seq, value}; buffer circular in/out/count */\n\n/* TODO: mutex + cond not_full + cond not_empty */\n\nvoid *producer(void *arg) {\n    /* TODO: lock; while(count==SIZE) wait(not_full); inserir;\n     * signal(not_empty); unlock */\n    return NULL;\n}\n\nvoid *consumer(void *arg) {\n    /* TODO: lock; while(count==0 && !fim) wait(not_empty); remover;\n     * signal(not_full); unlock; terminação: total conhecido + broadcast */\n    return NULL;\n}\n\nint main(void) {\n    /* TODO: criar threads, join, destroy mutex/conds, imprimir total */\n    return 0;\n}\n\n/* CHECKLIST: WHILE (nunca if) no cond_wait | signal da condvar CERTA\n * | predicado de saída no while do consumidor | broadcast no fim\n * | total consumido == N_PRODUCERS*ITEMS_PER_PRODUCER */\n"
+  }
+]

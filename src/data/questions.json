@@ -1,0 +1,2367 @@
+[
+  {
+    "id": "modelo-a-1",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "processes",
+    "question": "Se um processo filho modificar o valor de uma variável num programa em C, qual das seguintes afirmações descreve o seu efeito?",
+    "code": null,
+    "options": [
+      "A modificação afetará apenas o processo filho.",
+      "A modificação afetará tanto o processo filho como o processo pai.",
+      "A modificação apenas afetará o processo pai se a variável for global.",
+      "A modificação não terá nenhum efeito porque as variáveis não podem ser modificadas após a criação de um processo filho."
+    ],
+    "correctIndex": 0,
+    "explanation": "fork() cria uma CÓPIA do espaço de endereçamento do pai (copy-on-write). Depois do fork, pai e filho têm memórias independentes — qualquer alteração (global ou local) fica confinada ao processo que a fez. Memória só é partilhada com mecanismos explícitos (shm_open/mmap).",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 25,
+        "label": "fork(): visão conceptual"
+      }
+    ]
+  },
+  {
+    "id": "modelo-a-2",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "sync",
+    "question": "Com a execução concorrente de processos num sistema com um único CPU podemos ter:",
+    "code": null,
+    "options": [
+      "Um processo em execução, enquanto outro está bloqueado numa operação de sincronização usando um mecanismo de espera ativa.",
+      "Um processo em execução, enquanto outros estão bloqueados numa operação de sincronização usando um mecanismo de espera passiva.",
+      "Mais do que um processo em execução simultânea, quer existam ou não processos bloqueados em operações de sincronização usando mecanismos de espera passiva.",
+      "Apenas um processo bloqueado em operações de sincronização usando mecanismos de espera passiva, quer existam ou não processos em execução."
+    ],
+    "correctIndex": 1,
+    "explanation": "Com 1 CPU só existe UM processo em execução em cada instante (elimina c). Espera ativa (busy waiting) significa que o processo 'bloqueado' está na verdade a consumir CPU a testar a condição — não pode estar 'bloqueado em espera ativa' enquanto OUTRO executa no mesmo instante conceptual da opção a (espera ativa ≠ estado waiting). Espera passiva: o processo fica no estado waiting sem usar CPU — vários podem estar bloqueados enquanto um executa. É exatamente a opção b.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 15,
+        "label": "Espera ativa vs passiva"
+      }
+    ]
+  },
+  {
+    "id": "modelo-a-3",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "memory",
+    "question": "Num sistema operativo com paginação, um endereço virtual usado numa instrução de acesso à memória:",
+    "code": null,
+    "options": [
+      "Corresponde à posição exata da instrução na memória física, determinada no momento do carregamento do programa para a memória.",
+      "É um índice para uma tabela de páginas, que contém os endereços físicos das páginas correspondentes.",
+      "É um deslocamento (offset) dentro de uma página, combinado com o número da página, que é utilizado pela MMU para calcular o endereço físico.",
+      "É um endereço virtual que é traduzido para um endereço físico pela MMU, mas não possui relação direta com a organização da memória física."
+    ],
+    "correctIndex": 2,
+    "explanation": "Endereço virtual = número de página + offset dentro da página. A MMU usa o número de página como índice na tabela de páginas para obter a frame física, e concatena o offset (que não é traduzido). A opção b está incompleta/errada porque o endereço INTEIRO não é um índice — só a parte do número de página; o offset passa direto.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 13,
+        "label": "Páginas e tradução de endereços"
+      }
+    ]
+  },
+  {
+    "id": "modelo-a-4",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "sync",
+    "question": "Em programação concorrente, uma secção crítica é uma:",
+    "code": null,
+    "options": [
+      "Parte do programa em que são acedidos dados potencialmente partilhados por vários processos que devem ser alterados em exclusão mútua.",
+      "Parte do programa em que o processo requisita ao sistema operativo a reserva de mais memória de forma dinâmica.",
+      "Parte do programa em que um erro causa garantidamente o término do processo.",
+      "Parte do programa que é executada em kernel space."
+    ],
+    "correctIndex": 0,
+    "explanation": "Definição canónica: secção crítica = troço de código que acede a recursos/dados partilhados e que por isso tem de ser executado em exclusão mútua (no máximo um processo/thread lá dentro de cada vez). Nada a ver com malloc, crashes ou kernel space.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 19,
+        "label": "Problema da secção crítica"
+      }
+    ]
+  },
+  {
+    "id": "modelo-a-5",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "sync",
+    "question": "Quando um processo é bloqueado ao invocar a função sem_wait(&S) num semáforo S, assumindo que S tinha o valor 0 antes da invocação, o processo fica no estado de:",
+    "code": null,
+    "options": [
+      "Pronto (ready).",
+      "Em execução (running).",
+      "Em espera (waiting) e liberta a CPU.",
+      "Em espera (waiting), mas não liberta a CPU."
+    ],
+    "correctIndex": 2,
+    "explanation": "Semáforos POSIX usam espera PASSIVA: sem_wait sobre valor 0 bloqueia o processo → estado waiting/blocked, e o escalonador entrega a CPU a outro processo. 'Waiting sem libertar a CPU' é uma contradição (isso seria busy waiting, que mantém o processo running).",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 29,
+        "label": "API de semáforos POSIX"
+      },
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 29,
+        "label": "Estados de um processo"
+      }
+    ]
+  },
+  {
+    "id": "modelo-a-6",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "scheduling",
+    "question": "No escalonamento de processos baseado em prioridades, a inversão de prioridades refere-se a:",
+    "code": null,
+    "options": [
+      "Uma redução da prioridade de um processo por este bloquear constantemente em operações de I/O.",
+      "Um aumento da prioridade de um processo para que este liberte mais rapidamente um recurso requerido por um processo de maior prioridade.",
+      "Uma situação em que um processo de maior prioridade é obrigado a esperar por um processo de menor prioridade.",
+      "Uma atribuição de prioridades aos processos pela ordem inversa dos seus tempos de execução."
+    ],
+    "correctIndex": 2,
+    "explanation": "Inversão de prioridades: um processo de ALTA prioridade fica bloqueado à espera de um recurso detido por um de BAIXA prioridade (que ainda por cima pode ser preemptado por processos médios — caso Mars Pathfinder). A opção b descreve a SOLUÇÃO (priority inheritance), não o problema.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T12.pdf",
+        "page": 37,
+        "label": "Inversão de prioridades"
+      }
+    ]
+  },
+  {
+    "id": "modelo-a-7",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "signals",
+    "question": "Considerando as boas práticas de uso de sinais em programação concorrente, podemos afirmar que:",
+    "code": null,
+    "options": [
+      "Os sinais devem ser usados para sincronizar o acesso a variáveis partilhadas, substituindo completamente os mecanismos de exclusão mútua, como semáforos.",
+      "Os handlers devem ser simples, evitando chamadas a funções não reentrantes e operações que possam levar a estados inconsistentes.",
+      "Os sinais podem ser ignorados sem consequências em qualquer parte do código, pois o S.O. garante a integridade dos dados durante operações críticas.",
+      "Os sinais são destinados exclusivamente à execução de operações de I/O, pois sua manipulação ocorre no mesmo contexto que a função que os gera, permitindo operações complexas sem restrições."
+    ],
+    "correctIndex": 1,
+    "explanation": "Regra de ouro dos signal handlers: curtos e simples, só funções async-signal-safe (reentrantes) — tipicamente setar uma flag volatile sig_atomic_t. printf/malloc dentro de handlers é comportamento indefinido se interromperem a própria função. Sinais NÃO substituem exclusão mútua.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 41,
+        "label": "Sinais e handlers"
+      }
+    ]
+  },
+  {
+    "id": "modelo-a-8",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "processes",
+    "question": "Considere o excerto de código. Quantas vezes irá ser impresso \"S1\"? Assuma que a invocação da função execlp() nunca falha.",
+    "code": "void *f1(void *arg){\n  printf(\"S1\\n\");\n  pthread_exit(NULL);\n}\n\nfor(i = 0; i < 3; i++){\n  pid = fork();\n  if (pid > 0){\n    execlp(\"ls\", \"ls\", NULL);\n    pid = fork();\n  }\n  else{\n    pthread_create(&t[i], NULL, f1, NULL);\n    printf(\"S1\\n\");\n  }\n  printf(\"S2\\n\");\n}",
+    "options": [
+      "18.",
+      "6.",
+      "36.",
+      "3."
+    ],
+    "correctIndex": 1,
+    "explanation": "Chave: execlp SUBSTITUI a imagem do processo — nada depois dele executa (incluindo o segundo fork e os printf). Em cada iteração: o pai faz fork, entra no if (pid>0) e 'morre' no execlp; o filho entra no else e imprime S1 duas vezes (thread f1 + main), imprime S2, e continua para a iteração seguinte onde o papel se repete. Há 3 iterações × 1 filho sobrevivente × 2 'S1' = 6.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 23,
+        "label": "Criação de processos / fork()"
+      },
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 10,
+        "label": "Interface pthreads"
+      }
+    ]
+  },
+  {
+    "id": "modelo-a-9",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "sync",
+    "question": "S1 é inicializado a 1 e S2 a 0; up(s)/down(s) incrementam/decrementam atomicamente. Indique qual das seguintes afirmações é verdadeira:",
+    "code": "P1:                      P2:\n...                      ...\ndown(S1);                down(S2);\nup(S2);                  /* Executa bloco B */\n/* Executa bloco A */    down(S1);\nup(S1);                  up(S2);\n/* Executa bloco C */    /* Executa bloco D */",
+    "options": [
+      "P1 executa sempre o bloco C antes de P2 executar o bloco D.",
+      "P1 nunca executa o bloco C antes de P2 executar o bloco D.",
+      "Nada pode ser garantido em relação à ordem de execução dos blocos C e D.",
+      "P2 executa sempre o bloco B antes de P1 executar o bloco A."
+    ],
+    "correctIndex": 2,
+    "explanation": "P2 só passa down(S2) depois do up(S2) de P1, e só passa down(S1) depois do up(S1) de P1. Mas o bloco C de P1 vem DEPOIS de up(S1) sem mais sincronização: após up(S1), o escalonador pode correr P1 (C primeiro) ou P2 (down(S1); up(S2); D primeiro). Sem semáforo entre C e D, a ordem entre eles é indeterminada → c.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 26,
+        "label": "Semáforos"
+      }
+    ]
+  },
+  {
+    "id": "modelo-a-10",
+    "source": "Exame Modelo 2024/25 (A)",
+    "topic": "scheduling",
+    "question": "Sistema com 1 processador, escalonamento preemptivo de prioridades fixas. Prioridades: P1=1 (mais alta), P2=3 (mais baixa), P3=2. Perfis (1/2/3 = unidade de execução, I = bloqueio em I/O de 1 unidade): P1='111I1' chega em t=2; P2='2222I2' chega em t=1; P3='333I33' chega em t=0. Indique a sequência de execução ('-' = CPU idle):",
+    "code": "Processo | Perfil  | Chegada\nP1       | 111I1   | 2\nP2       | 2222I2  | 1\nP3       | 333I33  | 0",
+    "options": [
+      "33111-133-332222-2",
+      "32111212323-333",
+      "3311131332222-2",
+      "33322211133321"
+    ],
+    "correctIndex": 2,
+    "explanation": "t0-t1: só P3 (e depois P2, com prioridade menor) → 33. t2: P1 chega e preempta → 111 (t2-t4), depois P1 bloqueia em I/O 1 unidade. t5: prontos P3 (prio 2) e P2 → P3 executa a 3ª unidade e vai para I/O. t6: P1 voltou do I/O → executa a última unidade (1) e termina. t7-t8: P3 volta do I/O → 33 e termina. t9-t12: P2 → 2222, I/O em t13 (CPU idle '-'), t14: 2. Sequência: 3311131332222-2.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T12.pdf",
+        "page": 3,
+        "label": "Escalonamento por prioridades"
+      },
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 35,
+        "label": "Escalonamento preemptivo"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-1",
+    "source": "Exame Normal 2024/25",
+    "topic": "memory",
+    "question": "Em Linux, que mecanismo de gestão de memória permite ao sistema operativo partilhar páginas entre o processo pai e o processo filho até que algum deles escreva nessa página de forma a diminuir o custo de criação de processos?",
+    "code": null,
+    "options": [
+      "Mapeamento direto de memória",
+      "Copy-on-write",
+      "Shadow paging",
+      "Duplicação imediata (eager copy)"
+    ],
+    "correctIndex": 1,
+    "explanation": "O copy-on-write mantém as páginas do filho mapeadas para as mesmas páginas físicas do pai, só as duplicando quando uma escrita ocorre. As restantes opções ou não existem neste contexto (shadow paging) ou são o oposto da otimização pretendida (eager copy implica cópia imediata).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 25,
+        "label": "VM para gestão de memória / COW"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-2",
+    "source": "Exame Normal 2024/25",
+    "topic": "processes",
+    "question": "Em Linux, quando um processo termina e o seu pai não invoca a função wait() nem waitpid(), como é apresentado o estado desse processo pelo comando ps?",
+    "code": null,
+    "options": [
+      "Suspenso (suspended)",
+      "Zombie",
+      "Bloqueado (blocked)",
+      "Órfão (orphan)"
+    ],
+    "correctIndex": 1,
+    "explanation": "O kernel mantém a entrada do processo terminado (PID e código de saída) até o pai recolher esse estado com wait/waitpid, aparecendo entretanto como zombie. Órfão descreve outra situação (pai termina antes do filho), não esta.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 36,
+        "label": "Terminação, SIGCHLD e zombies"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-3",
+    "source": "Exame Normal 2024/25",
+    "topic": "memory",
+    "question": "Qual a sequência correta de ações quando ocorre uma falta de página (page fault) num sistema de memória virtual?",
+    "code": null,
+    "options": [
+      "A MMU coloca a página em cache, reinicia a instrução e só depois lança a exceção",
+      "A MMU lança uma exceção de page fault, o kernel seleciona uma página vítima, carrega a página em memória e, por fim, reinicia a instrução que causou a falta",
+      "O kernel envia um sinal SIGSEGV ao processo, copia a página para o disco e termina o processo",
+      "A MMU aguarda até que o processo liberte memória, sem gerar qualquer interrupção"
+    ],
+    "correctIndex": 1,
+    "explanation": "A sequência correta é: exceção de hardware, tratamento pelo kernel (escolha de vítima e carregamento da página) e reinício da instrução falhada. As outras opções descrevem sequências invertidas ou inexistentes (SIGSEGV só ocorre em acesso realmente inválido, não em page fault normal).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 16,
+        "label": "Page hit / page fault"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-4",
+    "source": "Exame Normal 2024/25",
+    "topic": "memory",
+    "question": "Em sistemas com paginação, qual o propósito principal da Translation Lookaside Buffer (TLB)?",
+    "code": null,
+    "options": [
+      "Armazenar páginas não referenciadas no disco para libertar memória física",
+      "Traduzir o endereço virtual diretamente em deslocamento dentro da tabela de páginas",
+      "Atuar como uma cache de entradas da página, acelerando a tradução de endereços virtuais em físicos",
+      "Manter a lista de páginas elegíveis para serem trocadas em cenários de falta de memória física"
+    ],
+    "correctIndex": 2,
+    "explanation": "A TLB é uma cache de entradas da tabela de páginas que evita aceder à tabela em memória a cada tradução, acelerando o acesso. As outras opções confundem-na com mecanismos de swapping ou de tradução direta que não existem.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 22,
+        "label": "TLB"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-5",
+    "source": "Exame Normal 2024/25",
+    "topic": "sync",
+    "question": "Qual das seguintes afirmações sobre os mecanismos de comunicação entre processos (IPC) está correta?",
+    "code": null,
+    "options": [
+      "A passagem de mensagens é tipicamente mais rápida e flexível do que a memória partilhada, pois não requer intervenção do kernel do sistema operativo",
+      "A memória partilhada é mais fácil de implementar em sistemas distribuídos, mas é menos eficiente do que a passagem de mensagens para a troca de grandes volumes de dados",
+      "O acesso simultâneo à memória partilhada requer estratégias de sincronização para garantir a coerência dos dados",
+      "A passagem de mensagens é ideal para a troca de grandes quantidades de dados, pois todas as operações são realizadas no espaço do utilizador sem chamadas de sistema"
+    ],
+    "correctIndex": 2,
+    "explanation": "Memória partilhada exige mecanismos explícitos de sincronização (semáforos, mutexes) para evitar condições de corrida. As outras opções invertem factos: passagem de mensagens envolve o kernel e é mais lenta para grandes volumes, e memória partilhada não é fácil em sistemas distribuídos.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 3,
+        "label": "Partilha de dados e modelos IPC"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-6",
+    "source": "Exame Normal 2024/25",
+    "topic": "sync",
+    "question": "Relativamente aos semáforos e às suas operações atómicas down() e up(), qual das seguintes afirmações é verdadeira?",
+    "code": null,
+    "options": [
+      "Um semáforo com valor inicial 0 é tipicamente usado para exclusão mútua no acesso a recursos partilhados",
+      "A operação down(s) incrementa o valor do semáforo s e bloqueia o processo se s tiver o valor 0",
+      "As operações down() e up() são garantidas como indivisíveis pelo kernel do sistema operativo, prevenindo condições de corrida na manipulação do semáforo",
+      "Um semáforo de contagem (com valor inicial maior que 0) é usado exclusivamente para sinalizar a ocorrência de um evento num algoritmo de barreira"
+    ],
+    "correctIndex": 2,
+    "explanation": "A atomicidade de down/up é garantida pelo kernel, evitando condições de corrida na própria estrutura do semáforo. Um semáforo de mutex inicializa-se a 1 (não 0) e down() decrementa (não incrementa), o que invalida as opções a) e b).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 26,
+        "label": "Semáforos"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-7",
+    "source": "Exame Normal 2024/25",
+    "topic": "sync",
+    "question": "Considere as estratégias de bloqueio coarse-grained e fine-grained. Qual das seguintes afirmações descreve corretamente o compromisso associado a estas abordagens?",
+    "code": null,
+    "options": [
+      "O bloqueio coarse-grained oferece melhor escalabilidade e concorrência, mas é mais complexo de implementar corretamente",
+      "É mais fácil de provar a correção do bloqueio fine-grained, mas leva a um desempenho inferior em cenários de baixa contenção",
+      "O bloqueio coarse-grained é mais simples de escrever e provar a sua correção, mas pode resultar em baixo desempenho em alta contenção devido à limitada concorrência",
+      "O bloqueio fine-grained tem um overhead menor devido à gestão de bloqueios, o que o torna ideal para todas as aplicações concorrentes"
+    ],
+    "correctIndex": 2,
+    "explanation": "Coarse-grained usa poucos locks grandes, simples de raciocinar mas limita a concorrência sob contenção; fine-grained é o inverso (mais escalável, mais complexo), o que inverte as opções a) e b).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T7.pdf",
+        "page": 24,
+        "label": "Coarse vs fine-grained locking"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-8",
+    "source": "Exame Normal 2024/25",
+    "topic": "sync",
+    "question": "Em que cenário os read-write locks (como pthread_rwlock_t) são particularmente úteis?",
+    "code": null,
+    "options": [
+      "Em aplicações onde a maioria das operações envolve a modificação frequente de dados partilhados por múltiplos escritores",
+      "Em sistemas com poucos acessos a dados partilhados, onde o overhead de gestão de bloqueios é irrelevante",
+      "Em qualquer aplicação concorrente, independentemente do padrão de acesso, devido à sua simplicidade de implementação",
+      "Em aplicações com um número significativamente maior de leitores do que escritores, onde a concorrência de leitura é crucial"
+    ],
+    "correctIndex": 3,
+    "explanation": "Rwlocks permitem múltiplos leitores em simultâneo e por isso compensam quando há muito mais leituras do que escritas; com muitos escritores concorrentes (opção a) o benefício desaparece porque a exclusão passa a dominar.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T8.pdf",
+        "page": 34,
+        "label": "Read-write locks"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-9",
+    "source": "Exame Normal 2024/25",
+    "topic": "scheduling",
+    "question": "Um processo I/O-bound e um processo CPU-bound estão a ser executados num sistema operativo. Qual das seguintes afirmações descreve mais precisamente o comportamento típico destes processos e as suas implicações no escalonamento?",
+    "code": null,
+    "options": [
+      "Processos I/O-bound tendem a monopolizar a CPU por longos períodos, enquanto processos CPU-bound frequentemente bloqueiam para operações de input/output",
+      "Processos CPU-bound são mais adequados para sistemas não-preemptivos, pois libertam a CPU regularmente, otimizando o débito computacional",
+      "A distinção entre I/O-bound e CPU-bound é irrelevante para a escolha do algoritmo de escalonamento, pois todos os processos são tratados de forma idêntica",
+      "Processos I/O-bound passam a maior parte do tempo à espera de input/output e executam por curtos períodos, o que os torna mais sensíveis ao tempo de resposta do escalonador"
+    ],
+    "correctIndex": 3,
+    "explanation": "I/O-bound alterna rajadas curtas de CPU com esperas longas de I/O, tornando-o sensível à latência de resposta do escalonador; as opções a) e b) trocam as características típicas de cada tipo de processo.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 5,
+        "label": "I/O-bound vs CPU-bound"
+      }
+    ]
+  },
+  {
+    "id": "normal2425-10",
+    "source": "Exame Normal 2024/25",
+    "topic": "scheduling",
+    "question": "Um sistema de tempo real utiliza escalonamento baseado em prioridades e partilha recursos entre processos. Um processo de alta prioridade (P_alta) tenta aceder a um recurso que está bloqueado por um processo de baixa prioridade (P_baixa). Qual das seguintes opções descreve corretamente o problema que pode surgir e uma solução para o mitigar?",
+    "code": null,
+    "options": [
+      "O problema é a inanição (starvation) de P_alta, e a solução é o envelhecimento de P_baixa",
+      "O problema é o bloqueio permanente (deadlock) entre P_alta e P_baixa, resolvido pelo Protocolo de Teto de Prioridade que previne a partilha de recursos",
+      "O problema é o overhead excessivo de comutação de contexto, e a solução é aumentar o time slice de P_baixa",
+      "O problema é a inversão de prioridades, onde P_alta é indiretamente bloqueado por P_baixa; o Protocolo de Herança de Prioridade pode mitigar isso"
+    ],
+    "correctIndex": 3,
+    "explanation": "Este é o clássico problema de inversão de prioridades, mitigado atribuindo temporariamente a prioridade de P_alta a P_baixa (herança de prioridade). Não se trata de deadlock nem de simples starvation resolvida por aging.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T12.pdf",
+        "page": 37,
+        "label": "Inversão de prioridades"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-1",
+    "source": "Exame Recurso 2024/25",
+    "topic": "processes",
+    "question": "Ao invocar um serviço do sistema operativo por meio de uma system call, que mecanismo efetua a transição de user space para kernel space?",
+    "code": null,
+    "options": [
+      "Uma interrupção de hardware",
+      "Uma exceção síncrona gerada por software (trap)",
+      "Um sinal assíncrono enviado pelo kernel ao processo",
+      "Uma normal invocação de uma função em user space"
+    ],
+    "correctIndex": 1,
+    "explanation": "A system call é implementada como uma trap, uma exceção síncrona provocada deliberadamente pelo próprio programa para pedir ao kernel a execução de código privilegiado. Não é uma interrupção de hardware nem um sinal assíncrono, que têm origens externas ao fluxo do programa.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 13,
+        "label": "Exceções síncronas / system calls"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-2",
+    "source": "Exame Recurso 2024/25",
+    "topic": "memory",
+    "question": "Em Linux, após a invocação da system call fork(), qual das seguintes afirmações sobre o espaço de endereçamento do processo filho é verdadeira?",
+    "code": null,
+    "options": [
+      "O processo filho partilha fisicamente toda a memória com o processo pai",
+      "O espaço de endereçamento do filho é completamente novo, sem qualquer relação com o do processo pai",
+      "O processo filho tem um espaço de endereçamento distinto, mas mapeado para as mesmas páginas físicas, sendo separada apenas após uma operação de escrita",
+      "O processo filho utiliza exclusivamente a memória do kernel até invocar uma função exec"
+    ],
+    "correctIndex": 2,
+    "explanation": "Isto descreve exatamente o mecanismo copy-on-write: espaços de endereçamento lógicos distintos, mas páginas físicas partilhadas até uma escrita forçar a cópia. As restantes opções contradizem este comportamento (partilha permanente ou espaço totalmente novo).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 25,
+        "label": "VM para gestão de memória / COW"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-3",
+    "source": "Exame Recurso 2024/25",
+    "topic": "scheduling",
+    "question": "Como é que um sistema operativo com escalonamento preemptivo assegura a partilha de CPU entre processos?",
+    "code": null,
+    "options": [
+      "Através da invocação voluntária de uma função, por parte do processo em execução, no final de um bloco de instruções do programa",
+      "Através de uma interrupção de um temporizador em hardware (timer interrupt) que força uma mudança de contexto periódica",
+      "Através da análise periódica (polling) do estado dos processos por parte do sistema operativo",
+      "Apenas quando um processo bloqueia em I/O ou termina, nunca de modo involuntário para o processo em execução"
+    ],
+    "correctIndex": 1,
+    "explanation": "A preempção depende de um timer interrupt periódico que devolve o controlo ao kernel independentemente da vontade do processo. As opções a) e d) descrevem escalonamento cooperativo, não preemptivo.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 35,
+        "label": "Escalonamento preemptivo e time slice"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-4",
+    "source": "Exame Recurso 2024/25",
+    "topic": "scheduling",
+    "question": "Qual das seguintes afirmações descreve corretamente a principal responsabilidade do dispatcher num sistema operativo?",
+    "code": null,
+    "options": [
+      "Decidir que processo deve ser executado a seguir e por quanto tempo, com base em políticas de escalonamento",
+      "Gerir a alocação de memória para novos processos e libertar a memória de processos terminados",
+      "Otimizar o balanceamento de carga entre múltiplos núcleos de processamento para maximizar o débito computacional",
+      "Realizar a comutação de contexto, regressar para o espaço de utilizador e transferir o controlo do CPU para o processo selecionado"
+    ],
+    "correctIndex": 3,
+    "explanation": "O dispatcher é o componente que efetivamente executa a mudança de contexto e entrega o CPU ao processo já escolhido; decidir qual processo executar é função do escalonador (scheduler), descrita erradamente na opção a).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 7,
+        "label": "Dispatcher e mudança de contexto"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-5",
+    "source": "Exame Recurso 2024/25",
+    "topic": "processes",
+    "question": "Qual das seguintes afirmações descreve corretamente a diferença entre faults e traps, no contexto das exceções síncronas?",
+    "code": null,
+    "options": [
+      "Faults são geradas por interrupções externas; traps são geradas por chamadas ao sistema",
+      "Traps devolvem o controlo à instrução atual; faults nunca permitem retomar a execução da instrução atual",
+      "Faults ocorrem devido a erros detetáveis e (potencialmente) recuperáveis; traps são exceções intencionais e devolvem o controlo à instrução seguinte",
+      "Ambas representam falhas fatais de hardware, sem possibilidade de recuperação"
+    ],
+    "correctIndex": 2,
+    "explanation": "Faults (ex.: page fault) são erros que o kernel pode tentar corrigir, retomando a mesma instrução; traps (ex.: system calls) são intencionais e continuam na instrução seguinte. As restantes opções trocam estas propriedades.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 11,
+        "label": "Taxonomia de ECF (faults vs traps)"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-6",
+    "source": "Exame Recurso 2024/25",
+    "topic": "sync",
+    "question": "Qual das seguintes afirmações descreve corretamente a inanição (starvation) em sistemas concorrentes?",
+    "code": null,
+    "options": [
+      "É uma condição em que um processo tenta repetidamente uma ação que falha, mas não está bloqueado",
+      "Ocorre quando um processo é continuamente impedido de aceder a um recurso necessário, impedindo-o de executar",
+      "É uma situação em que dois ou mais processos estão bloqueados indefinidamente, cada um esperando por um recurso detido pelo outro",
+      "Resulta da reordenação de instruções por compiladores e processadores, levando a resultados inconsistentes"
+    ],
+    "correctIndex": 1,
+    "explanation": "Starvation é a privação indefinida de acesso a um recurso necessário. A opção c) descreve deadlock e a) descreve livelock, conceitos distintos.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T8.pdf",
+        "page": 5,
+        "label": "Inanição (starvation)"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-7",
+    "source": "Exame Recurso 2024/25",
+    "topic": "sync",
+    "question": "No contexto do problema dos Leitores-Escritores, qual é o principal compromisso entre a primeira variante (favorece leitores) e a segunda variante (favorece escritores) do algoritmo?",
+    "code": null,
+    "options": [
+      "A primeira variante pode levar à inanição (starvation) de escritores, enquanto a segunda variante pode levar à inanição de leitores",
+      "A primeira variante é mais complexa de implementar, enquanto a segunda variante é mais simples",
+      "A primeira variante garante que nenhum escritor será bloqueado, enquanto a segunda variante garante que nenhum leitor será bloqueado",
+      "A primeira variante permite um maior grau de concorrência nas operações de leitura e escrita, enquanto a segunda variante impõe um acesso estritamente sequencial"
+    ],
+    "correctIndex": 0,
+    "explanation": "Favorecer leitores dá prioridade contínua a novos leitores, podendo bloquear escritores indefinidamente, e vice-versa na variante que favorece escritores. As opções c) e d) exageram os efeitos, negando qualquer bloqueio ou concorrência.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T8.pdf",
+        "page": 6,
+        "label": "Problema Leitores-Escritores"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-8",
+    "source": "Exame Recurso 2024/25",
+    "topic": "sync",
+    "question": "Qual das seguintes não é uma das quatro condições necessárias para a ocorrência de bloqueio (deadlock)?",
+    "code": null,
+    "options": [
+      "Exclusão mútua",
+      "Espera por retenção (hold and wait)",
+      "Preempção obrigatória",
+      "Espera circular"
+    ],
+    "correctIndex": 2,
+    "explanation": "A condição real é 'não preempção' (não permitir retirar recursos à força), não 'preempção obrigatória', que é o oposto e por isso não faz parte das quatro condições de Coffman. As outras três (exclusão mútua, hold and wait, espera circular) são condições genuínas.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T7.pdf",
+        "page": 15,
+        "label": "Condições necessárias de deadlock"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-9",
+    "source": "Exame Recurso 2024/25",
+    "topic": "scheduling",
+    "question": "Qual das seguintes afirmações compara corretamente os algoritmos Shortest Job First (SJF) e Shortest Remaining Time First (SRTF)?",
+    "code": null,
+    "options": [
+      "O SJF é uma versão preemptiva do SRTF, otimizando o tempo de resposta em sistemas interativos",
+      "O SRTF é provadamente ótimo para o tempo de retorno médio quando todos os processos estão disponíveis simultaneamente, ao contrário do SJF",
+      "SJF e SRTF podem levar à inanição (starvation) de processos com longos tempos de execução, mas o SRTF é mais complexo devido à necessidade de monitorização contínua",
+      "O SJF não necessita de estimativas de tempo de execução, enquanto o SRTF exige previsões precisas para funcionar eficazmente"
+    ],
+    "correctIndex": 2,
+    "explanation": "Ambos os algoritmos favorecem processos curtos e podem privar processos longos, mas o SRTF exige recalcular continuamente o tempo restante de todos os processos, aumentando a complexidade. A opção b) é enganadora: quando todos chegam ao mesmo tempo, SJF (não preemptivo) já é ótimo, pelo que SRTF não é exclusivamente ótimo 'ao contrário do SJF'.",
+    "confidence": "low",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T12.pdf",
+        "page": 8,
+        "label": "SJF / SRTF"
+      }
+    ]
+  },
+  {
+    "id": "recurso2425-10",
+    "source": "Exame Recurso 2024/25",
+    "topic": "scheduling",
+    "question": "Considere um sistema operativo que utiliza escalonamento Round-Robin (RR). Qual das seguintes afirmações sobre o algoritmo RR e o seu time slice é correta?",
+    "code": null,
+    "options": [
+      "Um time slice muito longo no RR resulta numa melhor performance interativa, pois os processos têm mais tempo para completar as suas tarefas",
+      "O RR é um algoritmo não-preemptivo que garante que os processos CPU-bound não monopolizem a CPU",
+      "Se o time slice for excessivamente curto, o débito computacional (throughput) do sistema pode sofrer significativamente devido ao aumento do overhead da comutação de contexto",
+      "O RR elimina completamente o overhead da comutação de contexto, tornando-o o algoritmo mais eficiente em todas as situações"
+    ],
+    "correctIndex": 2,
+    "explanation": "Um time slice muito curto aumenta a frequência de mudanças de contexto, degradando o throughput pelo overhead acumulado; RR é preemptivo (contradizendo b) e nunca elimina o overhead (contradizendo d).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 37,
+        "label": "Round-Robin"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-1",
+    "source": "Exame Especial 2024/25",
+    "topic": "processes",
+    "question": "Qual das seguintes afirmações descreve melhor a utilidade de existirem modos de processamento distintos (user/kernel)?",
+    "code": null,
+    "options": [
+      "Permitir que as aplicações experimentem instruções privilegiadas para optimizar desempenho",
+      "Impedir que as aplicações em user space acedam directamente aos recursos do sistema, garantindo protecção e isolamento",
+      "Evitar qualquer mudança de contexto durante operações de I/O",
+      "Forçar todas as operações de I/O a serem realizadas em user space para facilitar o desenvolvimento das aplicações"
+    ],
+    "correctIndex": 1,
+    "explanation": "A separação user/kernel existe para proteger o sistema, impedindo que aplicações acedam diretamente a hardware e recursos críticos. As restantes opções contradizem o propósito de isolamento (a permite instruções privilegiadas, d força I/O em user space).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T2.pdf",
+        "page": 14,
+        "label": "System calls e dual-mode"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-2",
+    "source": "Exame Especial 2024/25",
+    "topic": "memory",
+    "question": "Em Linux, após a invocação da system call fork(), qual das seguintes afirmações sobre o espaço de endereçamento do processo filho é verdadeira?",
+    "code": null,
+    "options": [
+      "O processo filho partilha fisicamente toda a memória com o processo pai",
+      "O espaço de endereçamento do filho é completamente novo, sem qualquer relação com o do processo pai",
+      "O processo filho tem um espaço de endereçamento distinto, mas mapeado para as mesmas páginas físicas, sendo separada apenas após uma operação de escrita",
+      "O processo filho utiliza exclusivamente a memória do kernel até invocar uma função exec"
+    ],
+    "correctIndex": 2,
+    "explanation": "Copy-on-write: espaços de endereçamento lógicos distintos que partilham as mesmas páginas físicas até uma escrita provocar a cópia. As outras opções descrevem partilha total ou ausência total de relação, ambas incorretas.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 25,
+        "label": "VM para gestão de memória / COW"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-3",
+    "source": "Exame Especial 2024/25",
+    "topic": "scheduling",
+    "question": "Num sistema com escalonamento preemptivo, que papel desempenha o temporizador de hardware (hardware timer)?",
+    "code": null,
+    "options": [
+      "O temporizador é apenas informativo, uma vez que a preempção ocorre quando o processo em execução liberta voluntariamente o CPU",
+      "O temporizador gera interrupções periódicas que permitem ao kernel interromper o processo corrente e escolher outro (timer interrupt)",
+      "O temporizador executa, por si só, o código do escalonador em user space para decidir o processo que irá executar a seguir",
+      "O temporizador sinaliza o processo em execução para invocar a função yield()"
+    ],
+    "correctIndex": 1,
+    "explanation": "O timer gera interrupções periódicas que forçam a entrada no kernel para decidir uma possível mudança de processo, sem depender de cooperação voluntária. O escalonador corre em kernel space, não em user space (contradizendo c).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T2.pdf",
+        "page": 28,
+        "label": "Proteção do CPU e timer"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-4",
+    "source": "Exame Especial 2024/25",
+    "topic": "processes",
+    "question": "Nos kernels modulares (por exemplo, Linux com módulos carregáveis), qual a principal finalidade dos módulos?",
+    "code": null,
+    "options": [
+      "Executar todo o código do sistema em user space",
+      "Permitir adicionar/atualizar funcionalidades (ex., device drivers) sem recompilar ou reiniciar o kernel",
+      "Forçar o escalonador a usar políticas diferentes por processo",
+      "Garantir que o kernel nunca faz I/O diretamente"
+    ],
+    "correctIndex": 1,
+    "explanation": "Módulos carregáveis (LKMs) permitem estender o kernel dinamicamente, tipicamente com drivers, sem necessidade de recompilação ou reboot. As restantes opções não correspondem à finalidade real dos módulos.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T2b.pdf",
+        "page": 19,
+        "label": "Kernels modulares / Linux"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-5",
+    "source": "Exame Especial 2024/25",
+    "topic": "processes",
+    "question": "Porque é que um processo pode ficar no estado \"zombie\" (defunct) após terminar?",
+    "code": null,
+    "options": [
+      "Porque está à espera de mais tempo de CPU para executar operações de libertação de recursos",
+      "Porque o kernel mantém o registo do PID e do estado de saída até o processo pai invocar wait()/waitpid() para recolher esse estado",
+      "Porque o processo nunca invocou exit() explicitamente",
+      "Porque o processo está bloqueado numa operação de I/O e não pode terminar"
+    ],
+    "correctIndex": 1,
+    "explanation": "O estado zombie existe porque o kernel guarda a informação de saída do processo para o pai recolher via wait/waitpid; o processo já terminou de facto, não está bloqueado nem à espera de CPU.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 36,
+        "label": "Terminação, SIGCHLD e zombies"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-6",
+    "source": "Exame Especial 2024/25",
+    "topic": "sync",
+    "question": "No problema Produtor-Consumidor com um buffer circular limitado a N posições, que conjunto de primitivas é mínimo e suficiente para coordenar múltiplos produtores e múltiplos consumidores sem condições de corrida?",
+    "code": null,
+    "options": [
+      "Um semáforo de exclusão mútua que protege o buffer",
+      "Dois semáforos de contagem, um para o número de slots livres e outro para o número de items no buffer",
+      "Um semáforo de contagem para slots, outro para items, mais um semáforo de exclusão mútua que protege o buffer",
+      "Somente operações atómicas de leitura/escrita sem semáforos"
+    ],
+    "correctIndex": 2,
+    "explanation": "A solução clássica precisa de dois semáforos de contagem (slots livres e items) para bloqueio passivo em buffer cheio/vazio, mais um mutex para proteger o acesso físico ao buffer contra múltiplos produtores/consumidores simultâneos. Só os dois de contagem (opção b) não impedem condições de corrida entre múltiplos produtores ou múltiplos consumidores entre si.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 34,
+        "label": "Produtor-consumidor com semáforos"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-7",
+    "source": "Exame Especial 2024/25",
+    "topic": "sync",
+    "question": "No contexto do problema dos Leitores-Escritores, qual é a consequência possível se existir um fluxo contínuo de leitores na primeira variante da solução que favorece os leitores?",
+    "code": null,
+    "options": [
+      "Os leitores podem experienciar inanição (starvation) e, por isso, não progridem",
+      "Os escritores podem experienciar inanição (starvation) e, por isso, não progridem",
+      "Nem leitores nem escritores podem aceder à zona de memória partilhada",
+      "O sistema fica obrigado a usar semáforos binários em modo reentrante"
+    ],
+    "correctIndex": 1,
+    "explanation": "Como a variante favorece leitores, um fluxo contínuo destes impede indefinidamente que escritores acedam ao recurso, causando a sua inanição. Os leitores, pelo contrário, não são prejudicados nesta variante.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T8.pdf",
+        "page": 10,
+        "label": "Leitores-Escritores: 1ª solução"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-8",
+    "source": "Exame Especial 2024/25",
+    "topic": "sync",
+    "question": "Quando é apropriado usar um pthread_rwlock_t em vez de um mutex tradicional?",
+    "code": null,
+    "options": [
+      "Quando a aplicação tem muito mais escritores do que leitores e quer reduzir o custo (overhead) do esquema de sincronização",
+      "Quando é necessário permitir múltiplos leitores simultâneos, mantendo exclusão para escritores, nomeadamente em cenários com muitos leitores e poucos escritores",
+      "Quando se quer garantir que escritores nunca ficam bloqueados",
+      "Quando se pretende evitar qualquer possibilidade de inanição (starvation) para leitores e escritores sem configuração adicional"
+    ],
+    "correctIndex": 1,
+    "explanation": "O rwlock vale a pena quando muitos leitores podem correr em paralelo, exclusivo apenas quando um escritor escreve; com predominância de escritores (opção a) a vantagem sobre um mutex simples desaparece.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T8.pdf",
+        "page": 37,
+        "label": "API POSIX de read-write locks"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-9",
+    "source": "Exame Especial 2024/25",
+    "topic": "scheduling",
+    "question": "No contexto do escalonamento por filas multinível com feedback, qual é o principal benefício de permitir que os processos se movam entre as diferentes filas?",
+    "code": null,
+    "options": [
+      "Simplificar a implementação do escalonador, eliminando a necessidade de prioridades fixas",
+      "Garantir que todos os processos recebam um time slice idêntico, independentemente do seu comportamento",
+      "Adaptar dinamicamente o escalonamento ao comportamento dos processos (ex., I/O-bound vs. CPU-bound) e mitigar a inanição (starvation) através de mecanismos de promoção",
+      "Reduzir o custo (overhead) da comutação de contexto, pois os processos permanecem na mesma fila até à sua conclusão"
+    ],
+    "correctIndex": 2,
+    "explanation": "O MLFQ ajusta a prioridade/fila de um processo conforme o seu comportamento observado, permitindo promoção de processos penalizados e evitando starvation. As outras opções descrevem esquemas estáticos, o oposto do feedback dinâmico.",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T12.pdf",
+        "page": 24,
+        "label": "MLFQ"
+      }
+    ]
+  },
+  {
+    "id": "especial2425-10",
+    "source": "Exame Especial 2024/25",
+    "topic": "scheduling",
+    "question": "Considere um sistema operativo que utiliza escalonamento Round-Robin (RR). Qual das seguintes afirmações sobre o algoritmo RR e o seu time slice é correta?",
+    "code": null,
+    "options": [
+      "Um time slice muito longo no RR resulta numa melhor performance interativa, pois os processos têm mais tempo para completar as suas tarefas",
+      "O RR é um algoritmo não-preemptivo que garante que os processos CPU-bound não monopolizem a CPU",
+      "Se o time slice for excessivamente curto, o débito computacional (throughput) do sistema pode sofrer significativamente devido ao aumento do overhead da comutação de contexto",
+      "O RR elimina completamente o overhead da comutação de contexto, tornando-o o algoritmo mais eficiente em todas as situações"
+    ],
+    "correctIndex": 2,
+    "explanation": "Um quantum muito curto multiplica o número de trocas de contexto, degradando o throughput; RR é preemptivo por definição (contradiz b) e nunca elimina overhead (contradiz d).",
+    "confidence": "high",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 37,
+        "label": "Round-Robin"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-1",
+    "source": "Exame Normal 2023/24",
+    "topic": "processes",
+    "question": "Em Linux, as chamadas ao sistema (system calls):",
+    "code": null,
+    "options": [
+      "São invocadas e executadas em user-space, permitindo a um processo aceder aos serviços disponibilizados pelo sistema operativo.",
+      "São invocadas em user-space e executadas em kernel-space, permitindo a um processo aceder aos serviços disponibilizados pelo sistema operativo.",
+      "Não são usadas porque os processos em user-space podem aceder diretamente aos serviços disponibilizados pelo sistema operativo.",
+      "Nenhuma das anteriores."
+    ],
+    "correctIndex": 1,
+    "explanation": "As system calls são invocadas em user-space mas executam em kernel-space, mudando o modo de privilégio do CPU para aceder a serviços do SO.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-2",
+    "source": "Exame Normal 2023/24",
+    "topic": "processes",
+    "question": "Um sistema operativo é normalmente complexo, sendo por isso construído através de um conjunto de componentes. A estruturação com base numa abordagem monolítica pura:",
+    "code": null,
+    "options": [
+      "Agrega todos os componentes num único processo que corre num único espaço de endereçamento.",
+      "Executa alguns componentes críticos em user space por uma questão de performance.",
+      "Exige um mecanismo de troca de mensagens entre user space e kernel space.",
+      "Permite carregar módulos dinamicamente, evitando a recompilação do núcleo quando se adicionam novas funcionalidades."
+    ],
+    "correctIndex": 0,
+    "explanation": "Num kernel monolítico puro todos os componentes correm num único espaço de endereçamento privilegiado, sem separação por processos.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-3",
+    "source": "Exame Normal 2023/24",
+    "topic": "processes",
+    "question": "As mudanças de estado de um processo são determinadas quer pelo seu fluxo de execução, quer pelo escalonador do sistema operativo. Qual das seguintes transições entre estados é possível?",
+    "code": null,
+    "options": [
+      "\"Bloqueado\" para \"em execução\".",
+      "\"Em execução\" para \"pronto a executar\".",
+      "\"Pronto a executar\" para \"bloqueado\".",
+      "\"Bloqueado\" para \"Terminado\"."
+    ],
+    "correctIndex": 1,
+    "explanation": "Um processo em execução pode ser preemptado (fim de quantum) e passar a pronto a executar; as outras transições listadas saltam etapas obrigatórias do diagrama de estados.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-4",
+    "source": "Exame Normal 2023/24",
+    "topic": "processes",
+    "question": "Durante a execução de um processo qual das seguintes situações pode ocorrer?",
+    "code": null,
+    "options": [
+      "Um processo bloqueia usando um mecanismo de espera ativa pelo acesso a um recurso, liberta o CPU e é colocado numa fila de espera associada ao recurso.",
+      "O tempo que o escalonador tinha atribuído ao processo (time quantum) termina, o processo liberta o CPU e mantém-se no estado \"em execução\".",
+      "O tempo que o escalonador tinha atribuído ao processo (time quantum) termina, o processo liberta o CPU e passa para o estado \"pronto a executar\".",
+      "Um processo cria outro processo, ficando de seguida à espera de que o seu filho termine invocando a função wait, não libertando o CPU e mantendo-se em execução."
+    ],
+    "correctIndex": 2,
+    "explanation": "Quando o quantum termina o processo é preemptado e passa para pronto a executar, aguardando nova oportunidade de CPU; as restantes opções contradizem os conceitos de espera ativa/passiva.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-5",
+    "source": "Exame Normal 2023/24",
+    "topic": "memory",
+    "question": "A técnica de memória virtual agrega recursos de hardware e software com três funções básicas: realocação, proteção e paginação. A função de proteção:",
+    "code": null,
+    "options": [
+      "Delega nos processos o mapeamento de endereços virtuais em endereços físicos.",
+      "Permite que um processo use mais memória do que a RAM fisicamente existente.",
+      "Impede que um processo utilize um endereço que não lhe pertence.",
+      "Assegura que cada processo tem o seu próprio espaço de endereçamento contínuo que começa no endereço 0."
+    ],
+    "correctIndex": 2,
+    "explanation": "A proteção garante isolamento entre processos, impedindo o acesso a endereços fora do seu espaço de endereçamento.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-6",
+    "source": "Exame Normal 2023/24",
+    "topic": "memory",
+    "question": "A gestão do acesso e reserva de memória pelos processos em execução:",
+    "code": null,
+    "options": [
+      "Não é necessária num sistema operativo que permita a execução concorrente de processos.",
+      "É substituída pelo conceito de memória virtual em Linux.",
+      "É crítica em qualquer sistema operativo que permita a execução concorrente de processos.",
+      "Obriga os processos a indicarem endereços físicos quando pretendem aceder à memória."
+    ],
+    "correctIndex": 2,
+    "explanation": "A gestão de memória é essencial para isolar processos concorrentes e garantir uso correto dos recursos físicos.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-7",
+    "source": "Exame Normal 2023/24",
+    "topic": "processes",
+    "question": "A comunicação entre processos permite:",
+    "code": null,
+    "options": [
+      "A troca de dados e a sincronização de ações, apenas quando os processos partilham o mesmo espaço de endereçamento.",
+      "A troca de dados e a sincronização das ações, mesmo sem partilha do mesmo espaço de endereçamento.",
+      "Apenas a troca de dados, sem sincronização das suas ações, independentemente da partilha do espaço de endereçamento.",
+      "Apenas a sincronização das ações, sem troca de dados, independentemente da partilha do espaço de endereçamento."
+    ],
+    "correctIndex": 1,
+    "explanation": "Mecanismos de IPC (pipes, sockets, memória partilhada) permitem trocar dados e sincronizar processos mesmo sem espaço de endereçamento comum.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-8",
+    "source": "Exame Normal 2023/24",
+    "topic": "signals",
+    "question": "A utilidade do uso de sinais como método de comunicação entre processos é limitada porque:",
+    "code": null,
+    "options": [
+      "Só podem ser usados entre as várias threads do mesmo processo.",
+      "Funcionam de forma assíncrona.",
+      "O programador não consegue associar mais dados ao sinal para além do seu número.",
+      "Um processo tem sempre a opção de ignorar a recepção de todos os sinais do sistema."
+    ],
+    "correctIndex": 2,
+    "explanation": "Um sinal transporta apenas o seu número, não permitindo associar dados adicionais, o que limita a sua utilidade como mecanismo de comunicação.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 41,
+        "label": "Sinais"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-9",
+    "source": "Exame Normal 2023/24",
+    "topic": "sync",
+    "question": "Uma solução eficiente para o problema da secção crítica deve garantir:",
+    "code": null,
+    "options": [
+      "Diferentes prioridades para os processos, envelhecimento (aging), ausência de interbloqueio (deadlock).",
+      "Acesso exclusivo, preempção, progressão.",
+      "Acesso exclusivo, progressão, espera limitada.",
+      "Ausência de preempção, privação de recursos (resource starvation), inversão de prioridades."
+    ],
+    "correctIndex": 2,
+    "explanation": "Os três requisitos clássicos de uma solução para a secção crítica são exclusão mútua, progresso e espera limitada.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-10",
+    "source": "Exame Normal 2023/24",
+    "topic": "sync",
+    "question": "Os mecanismos de sincronização de processos são implementados:",
+    "code": null,
+    "options": [
+      "Apenas em software.",
+      "Apenas em hardware.",
+      "Tanto em software como em hardware.",
+      "Apenas para garantir exclusão mútua."
+    ],
+    "correctIndex": 2,
+    "explanation": "Semáforos e mutexes são implementados em software mas recorrem a instruções atómicas de hardware (ex. test-and-set) para funcionar corretamente.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-11",
+    "source": "Exame Normal 2023/24",
+    "topic": "sync",
+    "question": "Em sistemas concorrentes, a privação de recursos (resource starvation) é uma situação em que:",
+    "code": null,
+    "options": [
+      "Dois processos (P1 e P2) se bloqueiam mutuamente devido a P1 ter bloqueado o semáforo S1, P2 ter bloqueado o semáforo S2, P1 necessitar de aceder a uma zona crítica protegida por S2 (sem libertar S1) e P2 necessitar de aceder a uma zona crítica protegida por S1 (sem libertar S2).",
+      "Dois processos (P1 e P2) se bloqueiam mutuamente devido a P1 ter bloqueado o semáforo S1, P2 ter bloqueado o semáforo S2, P1 necessitar de aceder a uma zona crítica protegida por S2 (depois de libertar S1) e P2 necessitar de aceder a uma zona crítica protegida por S1 (depois de libertar S2).",
+      "Em consequência da política de escalonamento do CPU, um recurso passa alternadamente dum processo P1 para um outro processo P2, deixando um terceiro processo P3 indefinidamente bloqueado sem acesso ao recurso.",
+      "Nenhuma das anteriores."
+    ],
+    "correctIndex": 2,
+    "explanation": "Starvation ocorre quando um processo fica indefinidamente sem acesso a um recurso porque este é sempre atribuído a outros; as opções a) e b) descrevem antes deadlock.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-12",
+    "source": "Exame Normal 2023/24",
+    "topic": "sync",
+    "question": "Decidir o número de semáforos necessários para uma correta sincronização de um conjunto de processos pode ser um exercício difícil. A abordagem de granularidade abrangente (coarse grained) tem como consequência:",
+    "code": null,
+    "options": [
+      "Diminuir o grau de concorrência das aplicações e o custo (overhead) do protocolo de sincronização.",
+      "Aumentar o grau de concorrência das aplicações e o custo (overhead) do protocolo de sincronização.",
+      "Diminuir o grau de concorrência das aplicações, mas aumentar o custo (overhead) do protocolo de sincronização.",
+      "Um maior número de dependências entre os semáforos, por vezes subtis, que podem originar situações de interbloqueio (deadlocks)."
+    ],
+    "correctIndex": 0,
+    "explanation": "Granularidade abrangente usa menos semáforos/locks mais largos, reduzindo tanto a concorrência como o overhead de gestão de sincronização.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-13",
+    "source": "Exame Normal 2023/24",
+    "topic": "scheduling",
+    "question": "A estratégia de escalonamento que permite que qualquer processo em execução monopolize o CPU até ao fim do seu código ou até o libertar voluntariamente é denominada por:",
+    "code": null,
+    "options": [
+      "Escalonamento não preemptivo.",
+      "Escalonamento preemptivo.",
+      "Escalonamento por prioridades fixas.",
+      "Escalonamento por prioridades dinâmicas."
+    ],
+    "correctIndex": 0,
+    "explanation": "No escalonamento não preemptivo o processo só liberta o CPU voluntariamente ou ao terminar, nunca por decisão do escalonador.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-14",
+    "source": "Exame Normal 2023/24",
+    "topic": "scheduling",
+    "question": "Aplicar ao algoritmo de escalonamento Round Robin: um time quantum muito pequeno...",
+    "code": null,
+    "options": [
+      "Converte-o na prática no algoritmo First In First Out.",
+      "Aumenta consideravelmente a performance do sistema.",
+      "Aumenta consideravelmente o custo (overhead) do escalonamento dos processos.",
+      "Converte-o na prática no algoritmo Shortest Job First."
+    ],
+    "correctIndex": 2,
+    "explanation": "Um quantum muito pequeno multiplica o número de trocas de contexto, aumentando o overhead de escalonamento.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-15",
+    "source": "Exame Normal 2023/24",
+    "topic": "sync",
+    "question": "Considere os seguintes processos P1 e P2. Assuma que existem dois semáforos (S1, S2) partilhados entre eles, ambos inicializados a 1. As funções up(s) e down(s) permitem incrementar e decrementar um semáforo, respetivamente, de forma atómica. Qual das seguintes afirmações é verdadeira?",
+    "code": "P1                    P2\ndown(S1);             down(S2);\ndown(S2);             down(S1);\n/* secção crítica */  /* secção crítica */\nup(S2);               up(S1);\nup(S1);               up(S2);",
+    "options": [
+      "O código poderá causar um interbloqueio (deadlock) porque S1 é libertado antes de S2 por P1.",
+      "O código poderá causar um interbloqueio (deadlock) porque P1 e P2 estão a tentar decrementar os semáforos pela mesma ordem.",
+      "O código poderá causar um interbloqueio (deadlock) porque P1 e P2 estão a tentar decrementar os semáforos por ordens diferentes.",
+      "O código nunca poderá causar um interbloqueio (deadlock) porque S1 e S2 são sempre libertados depois da secção crítica."
+    ],
+    "correctIndex": 2,
+    "explanation": "P1 bloqueia S1 depois S2 e P2 bloqueia S2 depois S1; se cada um obtiver o primeiro semáforo e esperar pelo segundo, ocorre deadlock por ordens de aquisição diferentes.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-16",
+    "source": "Exame Normal 2023/24",
+    "topic": "threads",
+    "question": "Considere um processo com diversas threads. Qual das seguintes secções do espaço de endereçamento de um processo é privada para cada uma das threads desse processo:",
+    "code": null,
+    "options": [
+      "Heap.",
+      "Stack.",
+      "Variáveis globais.",
+      "Código do programa."
+    ],
+    "correctIndex": 1,
+    "explanation": "Cada thread tem a sua própria stack; heap, variáveis globais e código são partilhados por todas as threads do processo.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-17",
+    "source": "Exame Normal 2023/24",
+    "topic": "sync",
+    "question": "Considere os seguintes processos P1 e P2 que executam num único processador. Assuma que existem dois semáforos (S1, S2), em que S1 é inicializado a zero (0) e S2 é inicializado a um (1). Indique qual das seguintes afirmações é verdadeira:",
+    "code": "P1                       P2\n...                      ...\ndown(S2);                down(S2);\n/* Executa bloco A */    /* Executa bloco B */\nup(S2);                  up(S2);\nup(S1);                  down(S1);\n/* Executa bloco C */    /* Executa bloco D */",
+    "options": [
+      "P1 executa sempre o bloco C antes de P2 executar o bloco D.",
+      "P1 nunca executa o bloco C antes de P2 executar o bloco D.",
+      "Nada pode ser garantido em relação à ordem de execução dos blocos A e B.",
+      "P2 executa sempre o bloco B antes de P1 executar o bloco A."
+    ],
+    "correctIndex": 2,
+    "explanation": "S2 funciona como mutex simples para A/B; qualquer um dos processos pode chegar primeiro a down(S2), pelo que a ordem entre A e B depende apenas do escalonamento, não sendo garantida.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-18",
+    "source": "Exame Normal 2023/24",
+    "topic": "scheduling",
+    "question": "Considere um sistema com um único processador e um algoritmo de escalonamento Round Robin com um time quantum igual a 2. Considerando os tempos de chegada e perfis de execução da tabela, indique a sequência de execução (\"-\" significa CPU inativo).",
+    "code": "Processo | Perfil do processo | Tempo de chegada\nP1       | 111I1               | 2\nP2       | 2222I2              | 1\nP3       | 333I33              | 0",
+    "options": [
+      "11223312231233",
+      "33221132213321",
+      "3322113-221-33-21",
+      "32111-1222-233-33"
+    ],
+    "correctIndex": 1,
+    "explanation": "Simulando RR com quantum=2 e chegadas em t=0(P3),1(P2),2(P1), IO de 1 tick, obtém-se exatamente a sequência 33221132213321, sem qualquer tempo ocioso.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-19",
+    "source": "Exame Normal 2023/24",
+    "topic": "scheduling",
+    "question": "Assuma o mesmo conjunto de processos, respetivos perfis de execução e tempos de chegada, mas um algoritmo de escalonamento preemptivo de prioridades fixas, em que os processos têm prioridades (P1=1 (mais alta); P2=2; P3=3 (mais baixa)). Indique a sequência de escalonamento (\"-\" significa CPU inativo).",
+    "code": "Processo | Perfil do processo | Tempo de chegada\nP1       | 111I1               | 2\nP2       | 2222I2              | 1\nP3       | 333I33              | 0",
+    "options": [
+      "32111-1222-233-33",
+      "321112122323-33",
+      "11223312231233",
+      "33221132213321"
+    ],
+    "correctIndex": 1,
+    "explanation": "Simulando prioridades fixas preemptivas (P1>P2>P3) com as chegadas e IO de 1 tick dadas, obtém-se exatamente 321112122323-33, com um único tick ocioso quando só P3 falta e está em I/O.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "normal2324-20",
+    "source": "Exame Normal 2023/24",
+    "topic": "sync",
+    "question": "O código seguinte apresenta uma solução para o problema dos \"Produtores/Consumidores\". Admita que existem duas threads produtoras bloqueadas na linha 4 e uma thread consumidora a executar a linha 6.",
+    "code": "Produtor\n1. void write(int elem){\n2.  pthread_mutex_lock(&mux);\n3.  while(n_elems == MAX)\n4.   pthread_cond_wait(&nf, &mux);\n5.  buffer[write_pos++] = elem;\n6.  ...\n7.  pthread_mutex_unlock(&mux);\n8. }\n\nConsumidor\n1. void read(int &elem){\n2.  pthread_mutex_lock(&mux);\n3.  ...\n4.  n_elem--;\n5.  if(n_elem == MAX - 1)\n6.   pthread_cond_broadcast(&nf);\n7.  pthread_mutex_unlock(&mux);\n8. }",
+    "options": [
+      "A correção das escritas não é garantida porque ambas as threads produtoras acordam ao mesmo tempo e executam simultaneamente a sua linha 5.",
+      "A correção das escritas é garantida porque, apesar de ambas acordarem ao mesmo tempo, apenas uma thread produtora avança de cada vez para a sua linha 5.",
+      "A correção das escritas é garantida porque a thread consumidora apenas consegue acordar uma das threads produtoras.",
+      "Não é possível ter duas threads produtoras simultaneamente na linha 4 porque a segunda thread só passa da linha 2 quando a anterior executar a sua linha 7."
+    ],
+    "correctIndex": 1,
+    "explanation": "O broadcast acorda ambas mas cada thread tem de reaquirir o mutex antes de avançar para a linha 5, serializando o acesso e garantindo correção.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-1",
+    "source": "Exame Recurso 2023/24",
+    "topic": "processes",
+    "question": "Em Linux, quando um processo cria outro invocando a chamada ao sistema (system call) fork(), qual das seguintes características do processo pai não é copiada para o processo filho:",
+    "code": null,
+    "options": [
+      "Espaço de endereçamento.",
+      "Identificador do utilizador (UID).",
+      "Identificador do processo (PID).",
+      "Tabela de descritores de ficheiros."
+    ],
+    "correctIndex": 2,
+    "explanation": "O filho recebe um PID próprio e diferente do pai; o espaço de endereçamento (cópia/COW), UID e tabela de descritores são herdados.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-2",
+    "source": "Exame Recurso 2023/24",
+    "topic": "processes",
+    "question": "Se um processo filho modificar o valor de uma variável num programa em C, qual das seguintes afirmações descreve o seu efeito?",
+    "code": null,
+    "options": [
+      "O processo pai vê imediatamente a alteração ao valor da variável, se essa variável for global.",
+      "O processo pai irá continuar a ver o valor antigo na variável, independentemente do segmento do espaço de endereçamento onde a variável foi reservada.",
+      "O pai vê a alteração ao valor da variável apenas se esta tiver sido reservada na heap antes do processo filho ter sido criado.",
+      "Nenhuma das anteriores."
+    ],
+    "correctIndex": 1,
+    "explanation": "Após fork(), pai e filho têm cópias independentes (copy-on-write) do espaço de endereçamento, pelo que o pai nunca vê alterações feitas pelo filho, seja qual for o segmento.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-3",
+    "source": "Exame Recurso 2023/24",
+    "topic": "processes",
+    "question": "Com a execução concorrente de processos num sistema com um único CPU podemos ter:",
+    "code": null,
+    "options": [
+      "Um processo em execução, enquanto outro está bloqueado numa operação de sincronização usando um mecanismo de espera ativa.",
+      "Um processo em execução, enquanto outros estão bloqueados numa operação de sincronização usando um mecanismo de espera passiva.",
+      "Mais do que um processo em execução simultânea, quer existam ou não processos bloqueados em operações de sincronização usando mecanismos de espera passiva.",
+      "Apenas um processo bloqueado em operações de sincronização usando mecanismos de espera passiva, quer existam ou não processos em execução."
+    ],
+    "correctIndex": 1,
+    "explanation": "Com espera passiva o processo bloqueado liberta o CPU, permitindo que outro processo esteja em execução; com um único CPU nunca há execução simultânea real.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-4",
+    "source": "Exame Recurso 2023/24",
+    "topic": "processes",
+    "question": "No diagrama de transições de estado de um processo discutido nas aulas, a transição de \"pronto a executar\" para \"em execução\" indica que:",
+    "code": null,
+    "options": [
+      "Um processo em execução foi preemptado por outro processo escolhido pelo escalonador.",
+      "Um processo deixou de estar bloqueado num semáforo.",
+      "A espera passiva do processo pela operação de I/O ou evento terminou.",
+      "Um novo processo acabou de ser criado."
+    ],
+    "correctIndex": 0,
+    "explanation": "A transição pronto->execução ocorre quando o escalonador escolhe um novo processo, o que na perspetiva do processo anterior corresponde a ser preemptado por este.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-5",
+    "source": "Exame Recurso 2023/24",
+    "topic": "memory",
+    "question": "A técnica de memória virtual agrega recursos de hardware e software com três funções básicas: realocação, proteção e paginação. A função de paginação:",
+    "code": null,
+    "options": [
+      "Delega nos processos o mapeamento de endereços virtuais em endereços físicos.",
+      "Permite que um processo use mais memória do que a RAM fisicamente existente.",
+      "Impede que um processo utilize um endereço que não lhe pertence.",
+      "Assegura que cada processo tem o seu próprio espaço de endereçamento contínuo que começa no endereço 0."
+    ],
+    "correctIndex": 1,
+    "explanation": "A paginação permite usar disco como extensão da RAM (swap), dando a ilusão de mais memória do que a fisicamente existente.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-6",
+    "source": "Exame Recurso 2023/24",
+    "topic": "memory",
+    "question": "O uso de um buffer circular numa zona de memória partilhada entre processos comunicantes:",
+    "code": null,
+    "options": [
+      "Dá a ilusão de que existe mais memória do que a realmente existente de forma física.",
+      "Reduz o número de operações de escrita em memória.",
+      "Permite que os processos acedam à memória sem qualquer mecanismo de sincronização.",
+      "Permite que os processos operem de forma assíncrona."
+    ],
+    "correctIndex": 3,
+    "explanation": "O buffer circular desacopla os ritmos de produtor e consumidor, permitindo que operem de forma assíncrona dentro dos limites da capacidade do buffer.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-7",
+    "source": "Exame Recurso 2023/24",
+    "topic": "pipes",
+    "question": "A principal vantagem do uso de pipes em relação ao uso de memória partilhada como mecanismo de comunicação entre processos é:",
+    "code": null,
+    "options": [
+      "A sua melhor performance.",
+      "A sincronização implícita na troca de dados.",
+      "A sua maior flexibilidade no acesso a apenas parte dos dados enviados.",
+      "Permitir a leitura simultânea do mesmo bloco de dados por vários processos consumidores."
+    ],
+    "correctIndex": 1,
+    "explanation": "Os pipes sincronizam implicitamente leitor e escritor (bloqueiam em leitura/escrita conforme o estado do buffer), ao contrário da memória partilhada que exige sincronização explícita.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T1b.pdf",
+        "page": 6,
+        "label": "I/O de sistema (pipes/FIFOs)"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-8",
+    "source": "Exame Recurso 2023/24",
+    "topic": "sync",
+    "question": "Em programação concorrente, uma secção crítica é uma:",
+    "code": null,
+    "options": [
+      "Parte do programa em que são acedidos dados potencialmente partilhados por vários processos que devem ser alterados em exclusão mútua.",
+      "Parte do programa em que o processo requisita ao sistema operativo a reserva de mais memória de forma dinâmica.",
+      "Parte do programa em que um bug causa garantidamente o término do processo.",
+      "Parte do programa que é executada em kernel space."
+    ],
+    "correctIndex": 0,
+    "explanation": "Secção crítica é o trecho de código que acede a dados partilhados e deve executar em exclusão mútua.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-9",
+    "source": "Exame Recurso 2023/24",
+    "topic": "scheduling",
+    "question": "Não assumindo qualquer conhecimento do comportamento dos processos em execução, com qual dos seguintes algoritmos de escalonamento é possível garantir a ausência de privação de recursos (resource starvation) no acesso ao CPU?",
+    "code": null,
+    "options": [
+      "Escalonamento por prioridades fixas.",
+      "Shortest Job First.",
+      "Round Robin.",
+      "Nenhum dos anteriores."
+    ],
+    "correctIndex": 2,
+    "explanation": "Round Robin garante que todos os processos recebem CPU periodicamente, sem necessitar de conhecer o comportamento futuro dos processos, evitando starvation.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-10",
+    "source": "Exame Recurso 2023/24",
+    "topic": "sync",
+    "question": "Os mecanismos de sincronização de processos disponibilizados pelo sistema operativo são:",
+    "code": null,
+    "options": [
+      "Dependentes da ordem e velocidade de execução dos processos.",
+      "Independentes da ordem e velocidade de execução dos processos.",
+      "Usados apenas para garantir exclusão mútua no acesso aos recursos partilhados.",
+      "Nenhuma das anteriores."
+    ],
+    "correctIndex": 1,
+    "explanation": "Semáforos e mutexes funcionam corretamente independentemente da velocidade relativa de execução dos processos que os usam.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-11",
+    "source": "Exame Recurso 2023/24",
+    "topic": "scheduling",
+    "question": "No escalonamento de processos baseado em prioridades, a inversão de prioridades refere-se a:",
+    "code": null,
+    "options": [
+      "Uma redução da prioridade de um processo por este bloquear constantemente em operações de I/O.",
+      "Um aumento da prioridade de um processo para que este liberte mais rapidamente um recurso requerido por um processo de maior prioridade.",
+      "Uma situação em que um processo de maior prioridade é obrigado a esperar por um processo de menor prioridade.",
+      "Uma atribuição de prioridades aos processos pela ordem inversa dos seus tempos de execução."
+    ],
+    "correctIndex": 2,
+    "explanation": "Inversão de prioridades ocorre quando um processo de alta prioridade fica bloqueado à espera de um recurso detido por um processo de baixa prioridade.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-12",
+    "source": "Exame Recurso 2023/24",
+    "topic": "sync",
+    "question": "Decidir o número de semáforos necessários para uma correta sincronização de um conjunto de processos pode ser um exercício difícil. A abordagem de granularidade fina (fine grained) tem como consequência:",
+    "code": null,
+    "options": [
+      "Diminuir o grau de concorrência das aplicações e o custo (overhead) do protocolo de sincronização.",
+      "Aumentar o grau de concorrência das aplicações e o custo (overhead) do protocolo de sincronização.",
+      "Diminuir o grau de concorrência das aplicações, mas aumentar o custo (overhead) do protocolo de sincronização.",
+      "Diminuir número de dependências entre os semáforos, reduzindo a possibilidade de situações de interbloqueio (deadlocks)."
+    ],
+    "correctIndex": 1,
+    "explanation": "Granularidade fina usa mais semáforos protegendo secções menores, aumentando a concorrência possível mas também o overhead de gestão.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-13",
+    "source": "Exame Recurso 2023/24",
+    "topic": "scheduling",
+    "question": "A estratégia de escalonamento que impede que um processo em execução monopolize o CPU até ao fim do seu código ou até o libertar voluntariamente é denominada por:",
+    "code": null,
+    "options": [
+      "Escalonamento não preemptivo.",
+      "Escalonamento preemptivo.",
+      "Escalonamento por prioridades fixas.",
+      "Escalonamento por prioridades dinâmicas."
+    ],
+    "correctIndex": 1,
+    "explanation": "O escalonamento preemptivo permite ao SO retirar o CPU a um processo antes deste terminar ou libertar voluntariamente.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-14",
+    "source": "Exame Recurso 2023/24",
+    "topic": "scheduling",
+    "question": "Aplicar ao algoritmo de escalonamento Round Robin: um time quantum muito grande...",
+    "code": null,
+    "options": [
+      "Converte-o na prática no algoritmo First In First Out.",
+      "Aumenta consideravelmente a performance do sistema.",
+      "Aumenta consideravelmente o custo (overhead) do escalonamento dos processos.",
+      "Converte-o na prática no algoritmo Shortest Job First."
+    ],
+    "correctIndex": 0,
+    "explanation": "Com um quantum muito grande cada processo tende a executar até terminar antes de ser preemptado, comportando-se como FIFO.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-15",
+    "source": "Exame Recurso 2023/24",
+    "topic": "processes",
+    "question": "Considere o seguinte excerto de código. Quantas vezes irá ser impresso \"S1\"? Assuma que a invocação da função execlp() nunca falha.",
+    "code": "void *f1(void *arg){\n  printf(\"S1\\n\");\n  pthread_exit(NULL);\n}\n\nfor(i = 0; i < 3; i++){\n  pid = fork();\n  if (pid > 0){\n    execlp(\"ls\", \"ls\", NULL);\n    pid = fork();\n  }\n  else{\n    pthread_create(&t[i], NULL, f1, NULL);\n    printf(\"S1\\n\");\n  }\n  printf(\"S2\\n\");\n}",
+    "options": [
+      "18.",
+      "6.",
+      "36.",
+      "3."
+    ],
+    "correctIndex": 1,
+    "explanation": "Como execlp() nunca falha e nunca retorna, o segundo fork() e o processo pai morrem sem imprimir nada; só a cadeia de filhos (um por iteração) continua o ciclo, cada um imprimindo S1 (próprio) mais S1 (da thread criada) em cada uma das 3 iterações: 3 x 2 = 6.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-16",
+    "source": "Exame Recurso 2023/24",
+    "topic": "processes",
+    "question": "Qual das seguintes afirmações melhor descreve o fluxo de controlo excecional num sistema operativo?",
+    "code": null,
+    "options": [
+      "O fluxo de controlo excecional ocorre quando um processo a executar em user-space altera diretamente o fluxo de execução para kernel-space sem qualquer forma de mediação.",
+      "O fluxo de controlo excecional diz respeito a eventos como interrupções, traps e exceções que fazem com que o CPU mude de user-space para kernel-space para lidar com condições ou eventos inesperados.",
+      "O fluxo de controlo excecional é um mecanismo que garante que todos os processos recebam igual tempo de CPU, interrompendo preemptivamente os processos em execução em intervalos fixos.",
+      "O fluxo de controlo excecional só ocorre durante o encerramento do sistema operativo para garantir que todos os processos são corretamente terminados."
+    ],
+    "correctIndex": 1,
+    "explanation": "Fluxo de controlo excecional refere-se a interrupções, traps e exceções que desviam a execução normal para o kernel.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-17",
+    "source": "Exame Recurso 2023/24",
+    "topic": "sync",
+    "question": "Considere os seguintes processos P1 e P2 que executam num único processador. Assuma que existem dois semáforos (S1, S2), em que S1 é inicializado a um (1) e S2 é inicializado a zero (0). Indique qual das seguintes afirmações é verdadeira:",
+    "code": "P1                       P2\n...                      ...\ndown(S1);                down(S2);\nup(S2);                  /* Executa bloco B */\n/* Executa bloco A */    down(S1);\nup(S1);                  up(S2);\n/* Executa bloco C */    /* Executa bloco D */",
+    "options": [
+      "P1 executa sempre o bloco C antes de P2 executar o bloco D.",
+      "P1 nunca executa o bloco C antes de P2 executar o bloco D.",
+      "Nada pode ser garantido em relação à ordem de execução dos blocos C e D.",
+      "P2 executa sempre o bloco B antes de P1 executar o bloco A."
+    ],
+    "correctIndex": 2,
+    "explanation": "O down(S1) de P2 só desbloqueia depois do up(S1) de P1, que ocorre imediatamente antes do bloco C; nesse instante o escalonador pode correr C ou D primeiro, pelo que a ordem entre eles não é garantida.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-18",
+    "source": "Exame Recurso 2023/24",
+    "topic": "scheduling",
+    "question": "Considere um sistema com um único processador e um algoritmo de escalonamento Shortest Remaining Time First. Considerando os tempos de chegada e perfis de execução da tabela, indique a sequência de execução (\"-\" significa CPU inativo).",
+    "code": "Processo | Perfil do processo | Tempo de chegada\nP1       | 111I1               | 2\nP2       | 2222I2              | 1\nP3       | 333I33              | 0",
+    "options": [
+      "111-1222-2333-333",
+      "3331331121222-2",
+      "33322211133321",
+      "321112122323-33"
+    ],
+    "correctIndex": 1,
+    "explanation": "Simulando SRTF por tempo total restante de CPU (incluindo trabalho pós-I/O) com as chegadas dadas, obtém-se exatamente 3331331121222-2, com um tick ocioso quando só P2 falta e está em I/O.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-19",
+    "source": "Exame Recurso 2023/24",
+    "topic": "scheduling",
+    "question": "Assuma o mesmo conjunto de processos, respetivos perfis de execução e tempos de chegada, mas um algoritmo de escalonamento preemptivo de prioridades fixas, em que os processos têm prioridades (P1=1 (mais alta); P2=3 (mais baixa); P3=2). Indique a sequência de escalonamento (\"-\" significa CPU inativo).",
+    "code": "Processo | Perfil do processo | Tempo de chegada\nP1       | 111I1               | 2\nP2       | 2222I2              | 1\nP3       | 333I33              | 0",
+    "options": [
+      "33111-133-332222-2",
+      "32111212323-333",
+      "3311131233222-2",
+      "33322211133321"
+    ],
+    "correctIndex": 2,
+    "explanation": "Simulando prioridades fixas preemptivas (P1>P3>P2) obtém-se 3311131332222-2; a opção c) é a mais próxima da simulação e a única com contagens de ticks por processo consistentes (P1=4, P2=5, P3=5), pelo que é escolhida apesar de uma pequena discrepância no texto da opção (possível gralha).",
+    "confidence": "low",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "recurso2324-20",
+    "source": "Exame Recurso 2023/24",
+    "topic": "sync",
+    "question": "O código seguinte apresenta uma solução para o problema dos \"Produtores/Consumidores\". Admita que existem duas threads produtoras bloqueadas na linha 4 e uma thread consumidora a executar a linha 6.",
+    "code": "Produtor\n1. void write(int elem){\n2.  pthread_mutex_lock(&mux);\n3.  while(n_elems == MAX)\n4.   pthread_cond_wait(&nf, &mux);\n5.  buffer[write_pos++] = elem;\n6.  ...\n7.  pthread_mutex_unlock(&mux);\n8. }\n\nConsumidor\n1. void read(int &elem){\n2.  pthread_mutex_lock(&mux);\n3.  ...\n4.  n_elem--;\n5.  if(n_elem == MAX - 1)\n6.   pthread_cond_broadcast(&nf);\n7.  printf(\"SCOMP\\n\");\n8.  pthread_mutex_unlock(&mux);\n9. }",
+    "options": [
+      "A linha 7 da thread consumidora será sempre executada antes de qualquer uma das threads produtoras conseguir executar a sua linha 5.",
+      "A linha 5 das threads produtoras será sempre executada em simultâneo pelas duas threads antes da thread consumidora executar a sua linha 7.",
+      "Cada uma das threads produtoras executa sempre de forma exclusiva a sua linha 5 antes da thread consumidora executar a sua linha 7.",
+      "Não é possível garantir qualquer ordem de execução entre a linha 7 da thread consumidora e da linha 5 das threads produtoras."
+    ],
+    "correctIndex": 0,
+    "explanation": "O consumidor mantém o mutex após o broadcast até à linha 8; as produtoras acordadas ficam bloqueadas a tentar readquirir o mutex, só podendo avançar para a linha 5 depois do unlock, que ocorre após a linha 7.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-1",
+    "source": "Exame Especial 2023/24",
+    "topic": "processes",
+    "question": "Em Linux, quando um processo cria outro invocando a chamada ao sistema (system call) fork(), qual das seguintes características do processo pai não é copiada para o processo filho:",
+    "code": null,
+    "options": [
+      "Código executável.",
+      "Stack.",
+      "Heap.",
+      "Valor retornado pelo fork()."
+    ],
+    "correctIndex": 3,
+    "explanation": "fork() retorna valores diferentes ao pai (PID do filho) e ao filho (0), sendo essa a única característica listada que não é copiada/igual entre ambos.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-2",
+    "source": "Exame Especial 2023/24",
+    "topic": "processes",
+    "question": "Se um processo filho modificar o valor de uma variável num programa em C, qual das seguintes afirmações descreve o seu efeito?",
+    "code": null,
+    "options": [
+      "A modificação afetará apenas o processo filho.",
+      "A modificação afetará tanto o processo filho como o processo pai.",
+      "A modificação apenas afetará o processo pai se a variável for global.",
+      "A modificação não terá nenhum efeito porque as variáveis não podem ser modificadas após a criação de um processo filho."
+    ],
+    "correctIndex": 0,
+    "explanation": "Após fork(), pai e filho têm espaços de endereçamento separados (copy-on-write), pelo que alterações no filho não afetam o pai, independentemente do segmento.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-3",
+    "source": "Exame Especial 2023/24",
+    "topic": "processes",
+    "question": "Com a execução concorrente de processos num sistema com um único CPU podemos ter:",
+    "code": null,
+    "options": [
+      "Um processo em execução, enquanto outro está bloqueado numa operação de sincronização usando um mecanismo de espera ativa.",
+      "Um processo em execução, enquanto outros estão bloqueados numa operação de sincronização usando um mecanismo de espera passiva.",
+      "Mais do que um processo em execução simultânea, quer existam ou não processos bloqueados em operações de sincronização usando mecanismos de espera passiva.",
+      "Apenas um processo bloqueado em operações de sincronização usando mecanismos de espera passiva, quer existam ou não processos em execução."
+    ],
+    "correctIndex": 1,
+    "explanation": "Com espera passiva os processos bloqueados libertam o CPU, permitindo que outro esteja em execução; com um único CPU nunca há execução verdadeiramente simultânea.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-4",
+    "source": "Exame Especial 2023/24",
+    "topic": "processes",
+    "question": "No diagrama de transições de estado de um processo discutido nas aulas, a transição de \"pronto a executar\" para \"em execução\" indica que:",
+    "code": null,
+    "options": [
+      "Um processo em execução foi preemptado por outro processo escolhido pelo escalonador.",
+      "Um processo deixou de estar bloqueado num semáforo.",
+      "A espera passiva do processo pela operação de I/O ou evento terminou.",
+      "Um novo processo acabou de ser criado."
+    ],
+    "correctIndex": 0,
+    "explanation": "A transição pronto->execução corresponde ao momento em que o escalonador escolhe um novo processo para correr, preemptando o anterior.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-5",
+    "source": "Exame Especial 2023/24",
+    "topic": "memory",
+    "question": "Num sistema operativo com paginação, um endereço lógico usado numa instrução:",
+    "code": null,
+    "options": [
+      "Corresponde à posição exata da instrução na memória física, determinada no momento da carga do programa.",
+      "É um índice para uma tabela de páginas, que contém os endereços físicos das páginas correspondentes.",
+      "É um deslocamento (offset) dentro de uma página, combinado com o número da página, que é utilizado pela MMU para calcular o endereço físico.",
+      "É um endereço virtual que é traduzido para um endereço físico pela MMU, mas não possui relação direta com a organização da memória física."
+    ],
+    "correctIndex": 2,
+    "explanation": "O endereço lógico decompõe-se em número de página + offset; a MMU usa o número de página para consultar a tabela de páginas e combina com o offset para obter o endereço físico.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-6",
+    "source": "Exame Especial 2023/24",
+    "topic": "processes",
+    "question": "Num sistema operativo, o Process Control Block (PCB):",
+    "code": null,
+    "options": [
+      "Contém informação que permite a troca de contexto entre processos.",
+      "É utilizado para facilitar a comunicação entre processos.",
+      "É utilizado para armazenar o código fonte de um processo.",
+      "Serve como interface entre o sistema operativo e o processo para a execução de chamadas ao sistema."
+    ],
+    "correctIndex": 0,
+    "explanation": "O PCB guarda o estado do processo (registos, PC, estado, etc.) necessário para restaurar a sua execução após uma troca de contexto.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-7",
+    "source": "Exame Especial 2023/24",
+    "topic": "processes",
+    "question": "A comunicação entre processos permite:",
+    "code": null,
+    "options": [
+      "A troca de dados e a sincronização de ações, apenas quando os processos partilham o mesmo espaço de endereçamento.",
+      "A troca de dados e a sincronização das ações, mesmo sem partilha do mesmo espaço de endereçamento.",
+      "Apenas a troca de dados, sem sincronização das suas ações, independentemente da partilha do espaço de endereçamento.",
+      "Apenas a sincronização das ações, sem troca de dados, independentemente da partilha do espaço de endereçamento."
+    ],
+    "correctIndex": 1,
+    "explanation": "Mecanismos de IPC permitem trocar dados e sincronizar ações mesmo entre processos sem espaço de endereçamento comum.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-8",
+    "source": "Exame Especial 2023/24",
+    "topic": "sync",
+    "question": "Em programação concorrente, uma secção crítica é uma:",
+    "code": null,
+    "options": [
+      "Parte do programa em que são acedidos dados potencialmente partilhados por vários processos que devem ser alterados em exclusão mútua.",
+      "Parte do programa em que o processo requisita ao sistema operativo a reserva de mais memória de forma dinâmica.",
+      "Parte do programa em que um bug causa garantidamente o término do processo.",
+      "Parte do programa que é executada em kernel space."
+    ],
+    "correctIndex": 0,
+    "explanation": "Secção crítica é o trecho de código que acede a dados partilhados e deve executar em exclusão mútua.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-9",
+    "source": "Exame Especial 2023/24",
+    "topic": "sync",
+    "question": "Uma solução eficiente para o problema da secção crítica deve garantir:",
+    "code": null,
+    "options": [
+      "Diferentes prioridades para os processos, envelhecimento (aging), ausência de interbloqueio (deadlock).",
+      "Acesso exclusivo, preempção, progressão.",
+      "Acesso exclusivo, progressão, espera limitada.",
+      "Ausência de preempção, privação de recursos (resource starvation), inversão de prioridades."
+    ],
+    "correctIndex": 2,
+    "explanation": "Os três requisitos clássicos são exclusão mútua, progresso e espera limitada.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-10",
+    "source": "Exame Especial 2023/24",
+    "topic": "sync",
+    "question": "Quando um processo é bloqueado ao chamar a função sem_wait(&S) num semáforo S, assumindo que S tinha o valor 0 antes da chamada, o processo fica no estado de:",
+    "code": null,
+    "options": [
+      "Pronto (ready).",
+      "Em execução (running).",
+      "Em espera (waiting) e liberta a CPU.",
+      "Em espera (waiting), mas não liberta a CPU."
+    ],
+    "correctIndex": 2,
+    "explanation": "sem_wait bloqueia de forma passiva: o processo passa a waiting e liberta o CPU para outro processo, ao contrário de espera ativa.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-11",
+    "source": "Exame Especial 2023/24",
+    "topic": "scheduling",
+    "question": "No escalonamento de processos baseado em prioridades, a inversão de prioridades refere-se a:",
+    "code": null,
+    "options": [
+      "Uma redução da prioridade de um processo por este bloquear constantemente em operações de I/O.",
+      "Um aumento da prioridade de um processo para que este liberte mais rapidamente um recurso requerido por um processo de maior prioridade.",
+      "Uma situação em que um processo de maior prioridade é obrigado a esperar por um processo de menor prioridade.",
+      "Uma atribuição de prioridades aos processos pela ordem inversa dos seus tempos de execução."
+    ],
+    "correctIndex": 2,
+    "explanation": "Inversão de prioridades ocorre quando um processo de alta prioridade fica bloqueado à espera de um recurso detido por um processo de baixa prioridade.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-12",
+    "source": "Exame Especial 2023/24",
+    "topic": "scheduling",
+    "question": "Relativamente ao escalonamento multinível com realimentação por filas, pode-se afirmar que:",
+    "code": null,
+    "options": [
+      "Cada fila deve obrigatoriamente aplicar o mesmo algoritmo de escalonamento, podendo variar apenas os parâmetros, como o tamanho do time quantum entre filas.",
+      "É adequado para situações em que os parâmetros de funcionamento dos processos a serem escalonados são bem conhecidos antecipadamente.",
+      "Adapta-se dinamicamente ao comportamento dos processos durante a execução.",
+      "Exige que cada processo seja atribuído a uma fila fixa e nunca mude de fila."
+    ],
+    "correctIndex": 2,
+    "explanation": "O escalonamento multinível com realimentação move processos entre filas com base no seu comportamento observado, adaptando-se dinamicamente sem conhecimento prévio.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-13",
+    "source": "Exame Especial 2023/24",
+    "topic": "scheduling",
+    "question": "A estratégia de escalonamento que impede que um processo em execução monopolize o CPU até ao fim do seu código ou até o libertar voluntariamente é denominada por:",
+    "code": null,
+    "options": [
+      "Escalonamento não preemptivo.",
+      "Escalonamento preemptivo.",
+      "Escalonamento por prioridades fixas.",
+      "Escalonamento por prioridades dinâmicas."
+    ],
+    "correctIndex": 1,
+    "explanation": "O escalonamento preemptivo permite ao SO retirar o CPU a um processo antes deste terminar ou libertar voluntariamente.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-14",
+    "source": "Exame Especial 2023/24",
+    "topic": "scheduling",
+    "question": "Aplicar ao algoritmo de escalonamento Round Robin: um time quantum muito grande...",
+    "code": null,
+    "options": [
+      "Converte-o na prática no algoritmo First In First Out.",
+      "Aumenta consideravelmente a performance do sistema.",
+      "Aumenta consideravelmente o custo (overhead) do escalonamento dos processos.",
+      "Converte-o na prática no algoritmo Shortest Job First."
+    ],
+    "correctIndex": 0,
+    "explanation": "Com um quantum muito grande cada processo tende a executar até terminar antes de ser preemptado, comportando-se como FIFO.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-15",
+    "source": "Exame Especial 2023/24",
+    "topic": "processes",
+    "question": "Considere o seguinte excerto de código. Quantas vezes irá ser impresso \"S1\"? Assuma que a invocação da função execlp() nunca falha.",
+    "code": "void *f1(void *arg){\n  printf(\"S1\\n\");\n  pthread_exit(NULL);\n}\n\nfor(i = 0; i < 3; i++){\n  pid = fork();\n  if (pid > 0){\n    execlp(\"ls\", \"ls\", NULL);\n    pid = fork();\n  }\n  else{\n    pthread_create(&t[i], NULL, f1, NULL);\n    printf(\"S1\\n\");\n  }\n  printf(\"S2\\n\");\n}",
+    "options": [
+      "18.",
+      "6.",
+      "36.",
+      "3."
+    ],
+    "correctIndex": 1,
+    "explanation": "Como execlp() nunca falha e nunca retorna, o segundo fork() e o processo pai (ramo if) morrem sem imprimir mais nada; só a cadeia de filhos continua o ciclo, cada um imprimindo S1 (próprio) e S1 (da thread criada) em cada uma das 3 iterações: 3 x 2 = 6.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-16",
+    "source": "Exame Especial 2023/24",
+    "topic": "processes",
+    "question": "Qual das seguintes afirmações melhor descreve o fluxo de controlo excecional num sistema operativo?",
+    "code": null,
+    "options": [
+      "O fluxo de controlo excecional ocorre quando um processo a executar em user-space altera diretamente o fluxo de execução para kernel-space sem qualquer forma de mediação.",
+      "O fluxo de controlo excecional diz respeito a eventos como interrupções, traps e exceções que fazem com que o CPU mude de user-space para kernel-space para lidar com condições ou eventos inesperados.",
+      "O fluxo de controlo excecional é um mecanismo que garante que todos os processos recebam igual tempo de CPU, interrompendo preemptivamente os processos em execução em intervalos fixos.",
+      "O fluxo de controlo excecional só ocorre durante o encerramento do sistema operativo para garantir que todos os processos são corretamente terminados."
+    ],
+    "correctIndex": 1,
+    "explanation": "Fluxo de controlo excecional refere-se a interrupções, traps e exceções que desviam a execução normal para o kernel.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-17",
+    "source": "Exame Especial 2023/24",
+    "topic": "sync",
+    "question": "Considere os seguintes processos P1 e P2 que executam num único processador. Assuma que existem dois semáforos (S1, S2), em que S1 é inicializado a um (1) e S2 é inicializado a zero (0). Indique qual das seguintes afirmações é verdadeira:",
+    "code": "P1                       P2\n...                      ...\ndown(S1);                down(S2);\nup(S2);                  /* Executa bloco B */\n/* Executa bloco A */    down(S1);\nup(S1);                  up(S2);\n/* Executa bloco C */    /* Executa bloco D */",
+    "options": [
+      "P1 executa sempre o bloco C antes de P2 executar o bloco D.",
+      "P1 nunca executa o bloco C antes de P2 executar o bloco D.",
+      "Nada pode ser garantido em relação à ordem de execução dos blocos C e D.",
+      "P2 executa sempre o bloco B antes de P1 executar o bloco A."
+    ],
+    "correctIndex": 2,
+    "explanation": "O down(S1) de P2 só desbloqueia depois do up(S1) de P1, que ocorre imediatamente antes do bloco C; a ordem entre C e D depende do escalonamento e não é garantida.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-18",
+    "source": "Exame Especial 2023/24",
+    "topic": "scheduling",
+    "question": "Considere um sistema com um único processador e um algoritmo de escalonamento Shortest Remaining Time First. Considerando os tempos de chegada e perfis de execução da tabela, indique a sequência de execução (\"-\" significa CPU inativo).",
+    "code": "Processo | Perfil do processo | Tempo de chegada\nP1       | 111I1               | 2\nP2       | 2222I2              | 1\nP3       | 333I33              | 0",
+    "options": [
+      "111-1222-2333-333",
+      "3331331121222-2",
+      "33322211133321",
+      "321112122323-33"
+    ],
+    "correctIndex": 1,
+    "explanation": "Simulando SRTF por tempo total restante de CPU com as chegadas dadas, obtém-se exatamente 3331331121222-2, com um tick ocioso quando só P2 falta e está em I/O.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-19",
+    "source": "Exame Especial 2023/24",
+    "topic": "scheduling",
+    "question": "Assuma o mesmo conjunto de processos, respetivos perfis de execução e tempos de chegada, mas um algoritmo de escalonamento preemptivo de prioridades fixas, em que os processos têm prioridades (P1=1 (mais alta); P2=3 (mais baixa); P3=2). Indique a sequência de escalonamento (\"-\" significa CPU inativo).",
+    "code": "Processo | Perfil do processo | Tempo de chegada\nP1       | 111I1               | 2\nP2       | 2222I2              | 1\nP3       | 333I33              | 0",
+    "options": [
+      "33111-133-332222-2",
+      "32111212323-333",
+      "3311131332222-2",
+      "33322211133321"
+    ],
+    "correctIndex": 2,
+    "explanation": "Simulando prioridades fixas preemptivas (P1>P3>P2) com as chegadas dadas, obtém-se exatamente 3311131332222-2, com um tick ocioso quando só P2 falta e está em I/O.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "especial2324-20",
+    "source": "Exame Especial 2023/24",
+    "topic": "sync",
+    "question": "O código seguinte apresenta uma solução para o problema dos \"Produtores/Consumidores\". Admita que existem duas threads produtoras bloqueadas na linha 4 e uma thread consumidora a executar a linha 6.",
+    "code": "Produtor\n1. void write(int elem){\n2.  pthread_mutex_lock(&mux);\n3.  while(n_elems == MAX)\n4.   pthread_cond_wait(&nf, &mux);\n5.  buffer[write_pos++] = elem;\n6.  ...\n7.  pthread_mutex_unlock(&mux);\n8. }\n\nConsumidor\n1. void read(int &elem){\n2.  pthread_mutex_lock(&mux);\n3.  ...\n4.  n_elem--;\n5.  if(n_elem == MAX - 1)\n6.   pthread_cond_broadcast(&nf);\n7.  printf(\"SCOMP\\n\");\n8.  pthread_mutex_unlock(&mux);\n9. }",
+    "options": [
+      "A linha 7 da thread consumidora será sempre executada antes de qualquer uma das threads produtoras conseguir executar a sua linha 5.",
+      "A linha 5 das threads produtoras será sempre executada em simultâneo pelas duas threads antes da thread consumidora executar a sua linha 7.",
+      "Cada uma das threads produtoras executa sempre de forma exclusiva a sua linha 5 antes da thread consumidora executar a sua linha 7.",
+      "Não é possível garantir qualquer ordem de execução entre a linha 7 da thread consumidora e da linha 5 das threads produtoras."
+    ],
+    "correctIndex": 0,
+    "explanation": "O consumidor mantém o mutex após o broadcast até à linha 8; as produtoras acordadas ficam bloqueadas a tentar readquirir o mutex, só podendo avançar para a linha 5 depois do unlock, que ocorre após a linha 7.",
+    "confidence": "high",
+    "adapted": false,
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  }
+]

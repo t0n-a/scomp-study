@@ -1,0 +1,206 @@
+[
+  {
+    "id": "modelo-g2-1",
+    "source": "Exame Modelo 2024/25",
+    "points": 5,
+    "title": "Museu com N scanners (processos + pipes)",
+    "archetype": "A",
+    "templateFile": "template-A-pipes.c",
+    "statement": "Implemente um programa em C que, através do uso de processos e pipes, simule um museu que possui N scanners de bilhetes distribuídos pelas suas galerias. Sempre que um visitante digitaliza o bilhete num destes scanners devem ser apresentadas no ecrã as informações do bilhete e a sua validade. Simule este sistema utilizando processos e pipes:\n- O processo pai mantém a base de dados com as informações dos bilhetes (pode assumir que a estrutura de dados que decidir usar já está preenchida com essa informação).\n- Cada processo filho representa um scanner de bilhetes.\n- Existe um pipe partilhado por todos os N processos filho, onde cada um solicita as informações relativas a um bilhete específico.\n- O processo-pai responde ao processo filho solicitante através de um pipe que partilha unicamente com esse scanner, enviando assim os dados do bilhete pretendido.",
+    "twist": "Ao contrário do master/slave canónico (um pipe dedicado por filho em cada sentido), aqui existe um único pipe partilhado por todos os N scanners para os pedidos (escrita concorrente de múltiplos processos no mesmo pipe), mas um pipe de resposta individual e dedicado a cada scanner.",
+    "hints": [
+      "Um pipe partilhado (mesmo file descriptor de escrita herdado por todos os filhos) para os pedidos; atenção a escritas atómicas (structs pequenas, < PIPE_BUF)",
+      "Um array de pipes de resposta, um por scanner, criado antes dos fork()",
+      "Cada pedido deve identificar o scanner de origem (ex. índice do filho) para o pai saber a que pipe de resposta responder",
+      "O pai corre um ciclo a ler pedidos do pipe partilhado e a despachar a resposta pelo pipe individual correspondente",
+      "Cada scanner pode simular vários bilhetes digitalizados (ciclo de pedidos), não um pedido único"
+    ]
+  },
+  {
+    "id": "modelo-g2-2",
+    "source": "Exame Modelo 2024/25",
+    "points": 7,
+    "title": "Múltiplos leitores e escritores em memória partilhada na heap",
+    "archetype": "B",
+    "templateFile": "template-B-readers-writers.c",
+    "statement": "Implemente um programa em C que, através do uso de threads, implemente um cenário de múltiplos escritores e múltiplos leitores. Haverá N escritores e M leitores (M e N podem ser estáticos ou definidos pelo utilizador).\nNum acesso concorrente a uma área de memória partilhada, é fundamental garantir a sincronização adequada entre as operações de leitura e escrita:\n- leitor – responsável por ler duas strings de uma estrutura presente na heap:\n  - Os leitores não modificam a área de memória partilhada, permitindo que vários leitores a acedam simultaneamente.\n  - Os leitores têm prioridade sobre os escritores.\n  - Cada leitor deve imprimir as strings lidas, juntamente com a contagem atual de leitores ativos.\n- escritor – responsável por escrever na área de memória partilhada na heap:\n  - Escreve o ID da thread e a hora atual.\n  - Apenas um escritor pode aceder à área de memória partilhada em qualquer momento.\n  - Os escritores só podem aceder à área de memória partilhada quando não há leitores ativos.\n  - Cada escritor imprime a contagem de escritores, bem como a contagem de leitores ativos.",
+    "twist": "Corresponde ao arquétipo B \"puro\" (readers-writers com prioridade de leitores); a particularidade está na estrutura partilhada alocada dinamicamente na heap (duas strings) e na obrigação de imprimir, em cada operação, os contadores de leitores/escritores ativos.",
+    "hints": [
+      "Struct partilhada alocada com malloc na heap contendo as duas strings; protegida por mutex(es) e contador de leitores",
+      "Contador de leitores ativos: o primeiro leitor bloqueia os escritores, o último liberta-os",
+      "Prioridade de leitores sobre escritores: um escritor só entra quando não há leitores ativos nem à espera de entrar",
+      "Escritor escreve o seu ID de thread e a hora atual (time()/ctime()) na estrutura partilhada",
+      "Cada leitor/escritor imprime a contagem de leitores ativos (e o escritor também a contagem de escritores)"
+    ]
+  },
+  {
+    "id": "normal2425-g2-1",
+    "source": "Exame Época Normal 2024/25",
+    "points": 5,
+    "title": "Master/slave: fatorial distribuído por processos slave",
+    "archetype": "A",
+    "templateFile": "template-A-pipes.c",
+    "statement": "Implemente um programa em C que aplique um padrão master–slave simples usando processos e pipes. O objetivo é ler do stdin uma sequência de M números inteiros não negativos, distribuí-los por um número fixo de N processos slave, fazer com que cada slave calcule o fatorial dos valores que lhe forem atribuídos e, de seguida, enviar os resultados de volta ao processo master, que os imprime pela ordem em que foram lidos do stdin.\nA sua solução deve garantir a criação do número adequado de processos e de pipes, permitindo que os processos slave sejam executados de forma concorrente.",
+    "twist": "Nenhum significativo — é o padrão master/slave canónico com N slaves fixos, pipes bidirecionais (um pipe pai→filho para enviar valores, um pipe filho→pai para devolver resultados) e a necessidade de preservar a ordem de entrada na impressão final (exige guardar/mapear o índice original de cada valor).",
+    "hints": [
+      "Um par de pipes por slave (um master->slave, outro slave->master), não um pipe partilhado por todos",
+      "Guardar o índice de leitura original de cada valor do stdin para conseguir reordenar os resultados no fim",
+      "Distribuir os M valores pelos N slaves (ex. round-robin ou blocos)",
+      "Cada slave calcula o fatorial e devolve o resultado identificado com o índice/pedido original",
+      "O master só imprime depois de recolher e reordenar todos os resultados recebidos"
+    ]
+  },
+  {
+    "id": "normal2425-g2-2",
+    "source": "Exame Época Normal 2024/25",
+    "points": 7,
+    "title": "Sensores e thread de registo com buffer circular",
+    "archetype": "C",
+    "templateFile": "template-C-producer-consumer.c",
+    "statement": "Implemente um programa em C que crie três threads: duas delas simulam sensores a gerar leituras de temperatura e a terceira serve de registo, consumindo essas leituras e apresentando-as no ecrã.\nAs threads comunicam através de um buffer circular com capacidade para 10 valores inteiros (cada valor representa uma leitura de sensor).\nCada sensor gera valores incrementais (por exemplo, 15, 16, 17, …) e coloca-os no buffer; a thread registo lê cada valor e imprime algo como:\nLeitura 3 do Sensor A: 17\nLeitura 2 do Sensor B: 23\n…\nAssume-se que são trocadas apenas 40 leituras de cada sensor ao longo da execução do programa.\nGaranta que:\n- Se o buffer estiver cheio, as threads sensores ficam bloqueadas de forma passiva até haver espaço livre;\n- Qualquer acesso ao buffer (leitura ou escrita) ocorre sob exclusão mútua;\n- Se o buffer estiver vazio, a thread registo fica bloqueada de forma passiva até surgir nova leitura.",
+    "twist": "Nenhum — é o produtor-consumidor clássico com 2 produtores e 1 consumidor, usando semáforos de contagem (slots livres/cheios) ou variáveis de condição, mais mutex de proteção do buffer.",
+    "hints": [
+      "Buffer circular de tamanho 10 protegido por mutex, com índices de escrita/leitura separados",
+      "Duas variáveis de condição (ou semáforos de contagem): uma para 'buffer não cheio', outra para 'buffer não vazio'",
+      "Cada leitura no buffer deve identificar o sensor de origem (ex. struct com sensor_id/valor) para a thread registo imprimir corretamente",
+      "Sensores bloqueiam em espera passiva quando o buffer está cheio; registo bloqueia quando está vazio",
+      "Terminar quando as 2x40 leituras tiverem sido geradas e consumidas"
+    ]
+  },
+  {
+    "id": "recurso2425-g2-1",
+    "source": "Exame Época de Recurso 2024/25",
+    "points": 5,
+    "title": "Coordenador e trabalhadores: processamento de encomendas",
+    "archetype": "A",
+    "templateFile": "template-A-pipes.c",
+    "statement": "Implemente um programa em C que simule um sistema concorrente de processamento de encomendas. O processo principal (coordenador) lê do stdin uma sequência de M pedidos de encomenda, cada um representado por um número inteiro positivo (ex., o número de unidades de um artigo). Estes pedidos devem ser distribuídos equitativamente por N processos filho (trabalhadores), criados previamente.\nCada trabalhador recebe os pedidos que lhe forem atribuídos através de um pipe, calcula o custo total de cada encomenda (ex., multiplicando o número de unidades por um valor fixo; pode considerar que todos os produtos têm o mesmo valor fixo), e envia os resultados de volta para o processo coordenador, que os imprime pela ordem em que os pedidos foram introduzidos.\nA sua solução deve:\n- Criar o número adequado de processos e pipes para garantir execução concorrente;\n- Assegurar a correcta associação de cada pedido ao trabalhador responsável;\n- Preservar a ordem de apresentação dos resultados relativamente à entrada.",
+    "twist": "Nenhum — variação temática do master/slave (fatorial → cálculo de custo), com a mesma estrutura de distribuição por pipes dedicados e devolução ordenada de resultados relativamente à entrada.",
+    "hints": [
+      "Um par de pipes por trabalhador (coordenador->trabalhador e trabalhador->coordenador)",
+      "Guardar o índice de entrada de cada pedido para poder imprimir os resultados pela ordem original",
+      "Distribuir os M pedidos equitativamente pelos N trabalhadores (ex. blocos ou round-robin)",
+      "Trabalhador calcula custo = unidades * valor fixo e devolve o resultado identificado",
+      "Coordenador recolhe todos os resultados e só depois (ou à medida que reordena) os imprime pela ordem de entrada"
+    ]
+  },
+  {
+    "id": "recurso2425-g2-2",
+    "source": "Exame Época de Recurso 2024/25",
+    "points": 7,
+    "title": "Semáforo rodoviário inteligente (carros vs. peões)",
+    "archetype": "C",
+    "templateFile": "template-C-producer-consumer.c",
+    "statement": "Implemente um programa em C que simule um semáforo rodoviário inteligente, que alterna o direito de passagem entre carros e peões, usando threads e sincronização.\nO programa deve criar duas threads geradoras de tráfego (uma simula a chegada de carros e outra simula a chegada de peões) e uma thread controladora do semáforo (que regula alternadamente quem pode atravessar, carros ou peões).\nO comportamento esperado é o seguinte:\n- Quando o semáforo está verde para peões, apenas peões podem atravessar; o mesmo se aplica aos carros, que só podem atravessar quando o semáforo estiver verde para os carros;\n- Cada passagem demora 1 segundo;\n- O semáforo muda de estado (de \"verde para carros\" para \"verde para peões\", ou vice-versa) após permitir a travessia de 5 entidades (carros ou peões);\n- Carros e peões bloqueiam de forma passiva até o semáforo estar verde para o seu tipo;\nAssuma que cada thread geradora de tráfego gera 30 entidades (carros ou peões). Para resolver este exercício (e apenas para esse efeito) pode considerar que dentro de uma thread pode usar a função printf() de uma forma segura.\nO output do programa deve incluir mensagens como:\n[PEÃO] Peão 1 a aguardar\n[CARRO] Veículo 5 atravessou\n[SEMAFORO] Mudança para peões\n[PEÃO] Peão 1 atravessou\n[CARRO] Veículo 6 a aguardar",
+    "twist": "Sincronização por alternância de estado controlada por uma terceira thread \"árbitro\"; não é produtor-consumidor com buffer, mas um mecanismo de exclusão condicional por fases (gate alternante), tipicamente implementado com mutex + variáveis de condição (ou semáforos) que sinalizam a mudança de fase após a contagem de 5 travessias.",
+    "hints": [
+      "Estado global do semáforo (ex. enum CARROS/PEOES) protegido por mutex, mais uma variável de condição por tipo de entidade",
+      "Contador de travessias da fase corrente; ao atingir 5, a thread controladora muda o estado e sinaliza (broadcast) as threads bloqueadas do outro tipo",
+      "Carros/peões bloqueiam em pthread_cond_wait enquanto o estado não for o do seu tipo",
+      "Cada travessia demora 1 segundo (sleep) e deve ser feita fora da secção crítica sempre que possível",
+      "Threads geradoras terminam após gerar as 30 entidades; controlo pode correr indefinidamente ou terminar quando ambas terminarem"
+    ]
+  },
+  {
+    "id": "especial2425-g2-1",
+    "source": "Exame Época Especial 2024/25",
+    "points": 5,
+    "title": "Pesquisa paralela num array de vendas (10 processos)",
+    "archetype": "A",
+    "templateFile": "template-A-pipes.c",
+    "statement": "Uma empresa de retalho tem os dados de vendas do ano anterior registados num array sales, e pretende identificar os registos onde foram vendidos mais de 2000 artigos. Como a empresa tem 1 000 000 registos, quer otimizar esta tarefa usando 10 processos, cada um responsável por procurar em 100 000 registos. Considera que cada registo é uma estrutura com os campos customer_code, product_code, quantity.\nSempre que um processo filho encontrar um produto que satisfaça o critério de pesquisa, deve enviar o código do produto para o processo pai, que o armazena num array larger, imprimindo o seu conteúdo quando todos os filhos tiverem terminado. Assuma que os valores do array sales já estão preenchidos com valores aleatórios.\nA sua solução deve garantir a criação do número adequado de processos e de pipes, permitindo que os processos filho sejam executados de forma concorrente.",
+    "twist": "Variante de A em sentido único (worker→pai apenas, sem o pai enviar dados de trabalho, pois cada filho já conhece o seu segmento do array sales por herança de memória via fork). Os filhos podem enviar 0 a N resultados variáveis (não uma resposta única por pedido), exigindo que o pai leia de cada pipe até EOF/fecho do pipe por cada processo filho.",
+    "hints": [
+      "Um pipe por filho (unidirecional filho->pai), sem pipe pai->filho pois o filho já herda o array sales completo do fork()",
+      "Cada filho pesquisa apenas o seu segmento de 100 000 registos (índices calculados a partir do seu número de processo)",
+      "Filho escreve no pipe um product_code por cada match encontrado (número de escritas variável, incluindo zero)",
+      "Pai deve ler de cada pipe até obter EOF (fecho do lado de escrita) para saber que aquele filho terminou",
+      "Pai acumula todos os product_code recebidos no array larger e só imprime após todos os filhos terminarem (esperar com wait/waitpid)"
+    ]
+  },
+  {
+    "id": "especial2425-g2-2",
+    "source": "Exame Época Especial 2024/25",
+    "points": 7,
+    "title": "Monitorização ambiental: 3 sensores, registo e alerta",
+    "archetype": "C",
+    "templateFile": "template-C-producer-consumer.c",
+    "statement": "Implemente um programa em C que simule um sistema de monitorização ambiental com 3 sensores (threads produtoras) e 2 threads consumidoras (registo e alerta).\nAs threads comunicam através de um buffer circular com capacidade para 10 leituras (cada leitura é uma estrutura com os campos sensor_id, read_number, value, urgent_flag). Cada sensor gera 40 leituras incrementais (ex.: 15, 16, 17, …), coloca-as no buffer circular e ativa a urgent_flag sempre que o valor ultrapassa um limiar definido (ex.: 30).\nA thread registo lê cada leitura do buffer e imprime algo como:\nLeitura 3 do Sensor A: 17\nLeitura 2 do Sensor B: 23\n…\nGaranta que:\n- Se o buffer estiver cheio, as threads sensores ficam bloqueadas de forma passiva até haver espaço livre;\n- Qualquer acesso ao buffer (leitura ou escrita) ocorre sob exclusão mútua;\n- Se o buffer estiver vazio, a thread registo fica bloqueada de forma passiva até surgir nova leitura;\n- Leituras do mesmo sensor_id devem ser processadas na mesma ordem em que foram geradas (read_number crescente);\n- A thread alerta mantém um contador de urgências por sensor e imprime uma mensagem quando é detetada uma urgent_flag (ex.: ALERTA 10, Sensor B: leitura 12, valor 33);\n- A thread alerta não deve impedir a thread registo de processar leituras. Deve ser acordada através de um mecanismo de notificação adicional.",
+    "twist": "Dois consumidores com papéis diferentes lendo o mesmo fluxo de dados (registo processa todas as leituras; alerta só reage a eventos urgentes); exige um mecanismo de notificação adicional (ex. variável de condição ou fila/semáforo próprio para alerta) para que a thread alerta não bloqueie nem atrase a thread registo, preservando também a ordem por sensor (read_number crescente) apesar de múltiplos produtores concorrentes.",
+    "hints": [
+      "Buffer circular de 10 posições com structs {sensor_id, read_number, value, urgent_flag}, protegido por mutex + 2 condvars (cheio/vazio)",
+      "Cada sensor gera leituras sequenciais (read_number crescente) — não é preciso reordenar entre sensores, só preservar ordem dentro do mesmo sensor_id",
+      "A thread registo consome do buffer normalmente; para a thread alerta usar uma segunda estrutura/fila (ou condvar dedicada) alimentada só quando urgent_flag está ativa, para não bloquear o registo",
+      "Contador de urgências por sensor protegido por mutex próprio, incrementado pela thread alerta",
+      "Terminar quando os 3x40 valores tiverem sido gerados e consumidos por ambas as threads consumidoras"
+    ]
+  },
+  {
+    "id": "normal2324-g2-1",
+    "source": "Exame Época Normal 2023/24",
+    "points": 6,
+    "title": "Fila de impressão com múltiplos clientes e impressoras",
+    "archetype": "C",
+    "templateFile": "template-C-producer-consumer.c",
+    "statement": "Implemente um programa em C que simule uma fila de impressão com várias impressoras e vários clientes usando threads.\nRequisitos:\n- Crie uma estrutura de dados para representar um trabalho de impressão.\n- Crie uma fila de impressão utilizando uma estrutura adequada com um tamanho máximo pré-determinado (bounded buffer) de 4 trabalhos.\n- Implemente a função que adiciona trabalhos de impressão à fila (executada pelas threads cliente).\n- Implemente a função que remove trabalhos de impressão da fila (executada pelas threads impressora).\n- Garanta que o acesso à fila é protegido por um mutex.\n- Crie 5 threads cliente. Assuma que cada cliente adiciona 1 trabalho a cada 2 segundos e que nunca termina.\n- Crie 3 threads impressora. Assuma que demora 5 segundos a processar um trabalho e que uma impressora nunca termina.\n- Sincronize o acesso à fila de impressão usando variáveis de condição, garantindo que uma thread cliente bloqueia se a fila estiver cheia e uma thread impressora bloqueia se a fila estiver vazia.",
+    "twist": "Múltiplos produtores (5 clientes) e múltiplos consumidores (3 impressoras) em vez do clássico 1 produtor/1 consumidor; buffer com capacidade fixa pequena (4) obriga a testar cheio/vazio com while e pthread_cond_wait em ambos os sentidos. Nenhuma das threads termina (execução infinita).",
+    "hints": [
+      "Bounded buffer de 4 posições (fila circular ou array com contagem), protegido por mutex",
+      "Duas variáveis de condição: 'fila não cheia' (para clientes) e 'fila não vazia' (para impressoras)",
+      "Usar while (não if) na condição de espera, pois há múltiplos produtores e múltiplos consumidores a competir",
+      "Cliente dorme 2s entre trabalhos; impressora dorme 5s a processar — nenhuma thread termina o ciclo",
+      "pthread_cond_signal/broadcast conforme o número de threads que pode ter de acordar de cada lado"
+    ]
+  },
+  {
+    "id": "recurso2324-g2-1",
+    "source": "Exame Época de Recurso 2023/24",
+    "points": 6,
+    "title": "Pontuações de triatlo com 2 threads alternadas",
+    "archetype": "C",
+    "templateFile": "template-C-producer-consumer.c",
+    "statement": "Implemente um programa em C que, através do uso de threads, simule um sistema de pontuações numa prova de triatlo com 300 atletas. O objetivo é determinar a pontuação final de cada atleta de acordo com a seguinte fórmula:\nfinal_score = 0.30 * (sc_swim + sc_bike + sc_run)/3 + 0.7 * total_time\nonde sc_swim, sc_bike e sc_run são as pontuações das provas de natação, ciclismo e corrida, respetivamente, e total_time é o tempo total do atleta.\nConsidere a seguinte estrutura de dados para armazenar os dados de avaliação de cada atleta:\ntypedef struct {\n  int number; // número do atleta\n  int event_scores[3]; // pontuações de natação, ciclismo e corrida\n  int total_time; // tempo total\n  float final_score; // pontuação final\n} athlete_score;\nAssuma que existe um array athlete_score scores[300] para armazenar os dados de avaliação de todos os atletas. O programa deve criar apenas 2 threads (T1 e T2) que se sincronizam através do uso de mutexes e variáveis de condição.\nA thread T1 deverá gerar aleatoriamente uma pontuação entre 0 e 100 para as pontuação de cada evento e um valor entre 50 e 100 para o tempo total de um atleta. De seguida, sinaliza a thread T2 que deverá preencher o campo final_score desse atleta, de acordo com a fórmula indicada acima.\nPara que não se percam os valores gerados para cada um dos atletas, deve garantir que as threads operam de forma alternada, isto é, T1 gera os valores parciais de um atleta e T2 calcula o seu resultado final, antes de serem gerados os valores para o próximo atleta.\nNo final, a thread principal imprime as pontuações finais de cada atleta e remove todos os mutexes e variáveis de condição usados.\nNota: admita que já existe uma função int gera_num(int inicio, int fim) que gera um valor aleatório no intervalo [inicio, fim].",
+    "twist": "Não é readers-writers nem produtor-consumidor com buffer — é um padrão de \"handoff\"/alternância estrita entre exatamente duas threads fixas (uma gera dados, a outra consome/processa), repetido em série para cada um dos 300 atletas; T1 nunca avança para o atleta seguinte antes de T2 terminar o atual.",
+    "hints": [
+      "Um mutex + uma variável 'turno' (ou 2 condvars, uma por thread) para forçar a alternância estrita T1->T2->T1->...",
+      "T1 gera os 3 event_scores e o total_time do atleta i, guarda em scores[i], sinaliza T2 e espera pelo seu turno",
+      "T2 espera ser sinalizada, calcula final_score com a fórmula dada, sinaliza de volta T1 para o próximo atleta",
+      "Repetir o ciclo para os 300 atletas (contador partilhado ou passado por argumento)",
+      "No fim, destruir mutex e variáveis de condição (pthread_mutex_destroy / pthread_cond_destroy) antes de imprimir os resultados"
+    ]
+  },
+  {
+    "id": "especial2324-g2-1",
+    "source": "Exame Época Especial 2023/24",
+    "points": 6,
+    "title": "Múltiplos leitores e escritores com prioridade de leitores",
+    "archetype": "B",
+    "templateFile": "template-B-readers-writers.c",
+    "statement": "Implemente um programa em C que, através do uso de threads, implemente um cenário de múltiplos escritores e múltiplos leitores. Haverá N escritores e M leitores (M e N podem ser estáticos ou definidos pelo utilizador).\nNum acesso concorrente a uma área de memória partilhada, é fundamental garantir a sincronização adequada entre as operações de leitura e escrita:\n- leitor – responsável por ler duas strings de uma estrutura presente na heap:\n  - Os leitores não modificam a área de memória partilhada, permitindo que vários leitores a acedam simultaneamente.\n  - Os leitores têm prioridade sobre os escritores.\n  - Cada leitor deve imprimir as strings lidas, juntamente com a contagem atual de leitores ativos.\n- escritor – responsável por escrever na área de memória partilhada na heap:\n  - Escreve o ID da thread e a hora atual.\n  - Apenas um escritor pode aceder à área de memória partilhada em qualquer momento.\n  - Os escritores só podem aceder à área de memória partilhada quando não há leitores ativos.\n  - Cada escritor imprime a contagem de escritores, bem como a contagem de leitores ativos.",
+    "twist": "Corresponde diretamente ao arquétipo B \"puro\" (readers-writers clássico com prioridade de leitores); sem twist particular além da prioridade explícita de leitores sobre escritores (variante \"readers-preference\") e da obrigação de imprimir contagens ativas em cada operação. É a mesma questão (verbatim) do Exame Modelo 2024/25.",
+    "hints": [
+      "Struct partilhada na heap com as duas strings, protegida por mutex(es) e contador de leitores ativos",
+      "Primeiro leitor bloqueia escritores; último leitor liberta o acesso para escritores (contador de leitores + mutex)",
+      "Prioridade de leitores: um leitor nunca espera por causa de um escritor à espera, só por um escritor já ativo",
+      "Escritor grava ID da thread e hora atual (time()/ctime()) na estrutura partilhada, com exclusão total",
+      "Cada leitura/escrita imprime as contagens ativas pedidas no enunciado (leitores ativos, e também escritores no caso do escritor)"
+    ]
+  },
+  {
+    "id": "normal2223-g2-1",
+    "source": "Exame Época Normal 2022/23",
+    "points": 7,
+    "title": "Simulador de corrida de automóveis com barreira de arranque/fim",
+    "archetype": "C",
+    "templateFile": "template-C-producer-consumer.c",
+    "statement": "Pretende-se implementar um simulador de corridas de automóvel. Para isso será necessário implementar uma função para simular cada carro (carro(...)), sendo que participarão na corrida um número fixo de carros (NCARROS) e uma função para simular o controlo da corrida (controlo_corrida(...)).\nA thread que simula o carro, com base na função carro(...), deverá esperar pelo arranque da corrida, e depois efetuar um número fixo de iterações, a simular NVOLTAS à pista, em que a simulação de cada volta adormece a thread durante um tempo aleatório (pode assumir entre 10 a 15 segundos), assinalando ao controlo da corrida o fim da volta. No fim da corrida, a thread deverá terminar.\nA thread que simula o controlo de corrida, com base na função controlo_corrida(...), deverá ser criada antes das threads dos carros e esperar que todos os carros estejam em posição de partida, antes de iniciar a corrida.\nNa função main() deve inicializar as estruturas de memória, mutexes e variáveis de condição para o funcionamento da simulação.\nSempre que um carro termina uma volta, a thread do carro deverá imprimir a informação do número do carro e do número da volta.\nQuando todos os carros tiverem terminado a corrida, a thread de controlo deverá imprimir uma mensagem a indicar que a corrida terminou.\nNo final devem ser libertadas todas as estruturas/mecanismos usados para a simulação.\nUtilize espera passiva e garanta que os dados são armazenados de forma coerente, resolvendo o exercício utilizando exclusivamente threads em C.\na) Codifique o código do main e as variáveis globais\nb) Codifique o código da função que simula o carro - carro(...)\nc) Codifique o código da função que controla a corrida - controlo_corrida(...)",
+    "twist": "Não é readers-writers nem produtor-consumidor com buffer; o desafio central é uma barreira dupla: (1) o controlo espera que todos os carros estejam prontos antes de sinalizar o arranque (barreira de arranque/rendezvous), e (2) o controlo espera que todos os carros tenham terminado todas as voltas antes de imprimir a mensagem final (barreira de término). Tipicamente implementado com um contador partilhado protegido por mutex + duas variáveis de condição distintas, sem polling.",
+    "hints": [
+      "Contador partilhado 'carros_prontos' protegido por mutex; cada carro incrementa e sinaliza antes de esperar pelo arranque",
+      "controlo_corrida espera (cond_wait) até carros_prontos == NCARROS, depois faz broadcast para libertar todos os carros ao mesmo tempo",
+      "Cada carro, ao terminar uma volta, dorme um tempo aleatório (10-15s) e imprime número do carro + número da volta",
+      "Segundo contador partilhado 'carros_terminados'; controlo_corrida espera (outra condvar) até todos os carros terminarem NVOLTAS",
+      "No fim, destruir todos os mutexes/variáveis de condição criados em main() antes de terminar o programa"
+    ]
+  }
+]

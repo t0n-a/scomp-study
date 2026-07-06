@@ -1,0 +1,691 @@
+[
+  {
+    "id": "fc-01",
+    "topic": "processes",
+    "front": "O que acontece à memória quando fork() é chamada?",
+    "back": "A imagem de memória completa do processo pai (heap, stack, dados, código) é copiada para o processo filho. O filho obtém uma cópia independente; alterações posteriores em qualquer um dos processos não afetam o outro.\n\n🧠 CLONE — Copied Lazily On Next Edit: a memória só é duplicada fisicamente quando o pai ou o filho escreve (Copy-on-Write).",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "fc-02",
+    "topic": "processes",
+    "front": "O que faz uma chamada bem-sucedida de exec(), e por que é que o código após ela é inalcançável?",
+    "back": "exec() substitui a imagem de memória inteira do processo por um novo programa. Uma exec bem-sucedida nunca retorna; o código original é completamente substituído, pelo que o código após exec() só é executado se exec() falhar.\n\n🧠 SWAP — Same Wrapper, Another Program: mesma \"carcaça\" (PID, fds), programa novo; o código a seguir só corre se o exec() falhar.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "fc-03",
+    "topic": "processes",
+    "front": "Defina um processo zombie.",
+    "back": "Um processo filho que terminou mas cujo estado de saída ainda não foi recolhido pelo pai. Ocupa uma entrada na tabela de processos até o pai chamar wait() ou waitpid().\n\n🧠 RIP — Reaping Is Peace: o zombie só descansa quando o pai faz wait().",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "fc-04",
+    "topic": "processes",
+    "front": "Defina um processo órfão.",
+    "back": "Um processo filho cujo pai terminou antes do filho terminar. O órfão é adotado pelo processo init (PID 1) e eventualmente colhido quando termina.\n\n🧠 RIP — Reaping Is Peace: o órfão é adotado pelo init/systemd, que faz wait() por ele para nunca virar zombie eterno.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "fc-05",
+    "topic": "processes",
+    "front": "Nomeie os três estados principais de um processo.",
+    "back": "Pronto (aguardando CPU), Em execução (atualmente na CPU), À espera (bloqueado em I/O ou outro recurso). O escalonador faz a transição de processos entre estes estados.\n\n🧠 GAMER — Gerado → Aguarda → Manda → Emperrado → Reformado: os três estados fazem parte do mesmo ciclo de vida do processo.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "fc-06",
+    "topic": "processes",
+    "front": "Quais são as principais transições entre estados de processo?",
+    "back": "Pronto→Em execução (escalonador seleciona), Em execução→Pronto (fatia de tempo expira), Em execução→À espera (processo bloqueia em I/O), À espera→Pronto (I/O completo).\n\n🧠 GAMER — Gerado → Aguarda → Manda → Emperrado → Reformado = New → Ready → Running → Waiting → Terminated.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "fc-07",
+    "topic": "processes",
+    "front": "Por que é que sleep() é inadequada para impor ordem de execução entre processos?",
+    "back": "A duração do sleep é não-determinística; sinais podem interromper o sleep, acordando-o mais cedo. A ordem de execução depende do escalonador, não do tempo. Use wait() ou waitpid() para sincronização garantida.\n\n🧠 WAIT — Watch And Inspect Termination: use wait()/waitpid() para sincronizar, nunca sleep().",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "fc-08",
+    "topic": "processes",
+    "front": "Por que deve sempre verificar o valor de retorno de fork() e como?",
+    "back": "fork() pode falhar (ex. máximo de processos atingido) e retorna -1 em erro. Sempre verifique: if (fork() == -1) { perror(\"fork\"); exit(1); }",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T3.pdf",
+        "page": 3,
+        "label": "A abstração de processo"
+      }
+    ]
+  },
+  {
+    "id": "fc-09",
+    "topic": "pipes",
+    "front": "Ao ler de um pipe, o que causa um deadlock permanente?",
+    "back": "Se a extremidade de escrita do pipe nunca for fechada por todos os processos que a mantêm. read() bloqueia indefinidamente porque o SO pensa que dados podem ainda chegar; só retorna 0 (EOF) quando todos os descritores de escrita são fechados.\n\n🧠 SYNC — Synchronized Yielding Notifying Channel: read() só devolve EOF quando todos os descritores de escrita forem fechados.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T1b.pdf",
+        "page": 6,
+        "label": "I/O de sistema (pipes/FIFOs)"
+      }
+    ]
+  },
+  {
+    "id": "fc-10",
+    "topic": "pipes",
+    "front": "Por que é que um pai pode ficar permanentemente bloqueado chamando wait() quando filhos estão a escrever num pipe?",
+    "back": "Se o buffer do pipe ficar cheio, write() bloqueia. Os filhos bloqueiam ao tentar escrever. O pai bloqueia em wait() sem drenar o pipe. Resultado: espera circular (deadlock clássico). Drene o pipe antes de chamar wait().",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T1b.pdf",
+        "page": 6,
+        "label": "I/O de sistema (pipes/FIFOs)"
+      }
+    ]
+  },
+  {
+    "id": "fc-11",
+    "topic": "pipes",
+    "front": "Quando é SIGPIPE enviado, e para quem?",
+    "back": "SIGPIPE é enviado para um processo que escreve num pipe quando todos os descritores de leitura desse pipe foram fechados em todos os processos. Tipicamente mata o processo que escreve.\n\n🧠 SYNC — Synchronized Yielding Notifying Channel: escrever com todos os leitores fechados gera SIGPIPE.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T1b.pdf",
+        "page": 6,
+        "label": "I/O de sistema (pipes/FIFOs)"
+      }
+    ]
+  },
+  {
+    "id": "fc-12",
+    "topic": "pipes",
+    "front": "O que é PIPE_BUF e por que é importante para escritas multi-processo?",
+    "back": "PIPE_BUF (tipicamente 4096 bytes) é o tamanho máximo atómico de escrita num pipe. Escritas maiores que PIPE_BUF podem ser partidas em fragmentos, permitindo que escritas de outros processos se intercalem. Mantenha mensagens ≤ PIPE_BUF para atomicidade.\n\n🧠 SYNC — Synchronized Yielding Notifying Channel: escritas até PIPE_BUF são atómicas no buffer do pipe.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T1b.pdf",
+        "page": 6,
+        "label": "I/O de sistema (pipes/FIFOs)"
+      }
+    ]
+  },
+  {
+    "id": "fc-13",
+    "topic": "pipes",
+    "front": "Por que é que descritores de ficheiro originais permanecem abertos após dup2() e exec()?",
+    "back": "Descritores de ficheiro são preservados através de exec() a menos que marcados explicitamente com FD_CLOEXEC. Após dup2(fd[1], 1), o fd[1] original fica aberto na nova imagem de processo, causando falhas de I/O e deteção de EOF.\n\n🧠 COF — Copied Offsets in Fork: descritores de ficheiro preservados em exec() a menos que marcados close-on-exec.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T1b.pdf",
+        "page": 6,
+        "label": "I/O de sistema (pipes/FIFOs)"
+      }
+    ]
+  },
+  {
+    "id": "fc-14",
+    "topic": "pipes",
+    "front": "Qual é a sequência apropriada ao usar dup2() antes de exec()?",
+    "back": "dup2(oldfd, newfd) para redirecionar, depois close(oldfd) imediatamente, depois exec(). Isto garante que o descritor original não se propaga para a nova imagem de processo.\n\n🧠 DUP — Duplicate Utility for Paths: dup2(oldfd, newfd), depois close(oldfd), só depois exec().",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T1b.pdf",
+        "page": 6,
+        "label": "I/O de sistema (pipes/FIFOs)"
+      }
+    ]
+  },
+  {
+    "id": "fc-15",
+    "topic": "signals",
+    "front": "Quais funções da biblioteca C padrão são seguras para chamar dentro de um manipulador de sinal?",
+    "back": "Apenas funções async-signal-safe como write(), não printf(), malloc() ou exit(). Manipuladores de sinal interrompem de forma assíncrona; funções não seguras podem corromper estado interno se já em uso.\n\n🧠 ASAP — Async-Signal Avoiding Pitfalls: só funções async-signal-safe como write() dentro de um handler.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 41,
+        "label": "Sinais"
+      }
+    ]
+  },
+  {
+    "id": "fc-16",
+    "topic": "signals",
+    "front": "O que é a condição de corrida check-then-act com sinais?",
+    "back": "Se um sinal chega após verificar uma flag mas antes de pause(), o sinal define a flag e retorna, depois pause() bloqueia indefinidamente na condição agora verdadeira. Use sigsuspend() com o sinal bloqueado, ou teste enquanto bloqueado.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 41,
+        "label": "Sinais"
+      }
+    ]
+  },
+  {
+    "id": "fc-17",
+    "topic": "signals",
+    "front": "Por que é que sinais padrão não podem contar ocorrências de eventos?",
+    "back": "Sinais padrão não são enfileirados; o kernel apenas regista um booleano (pendente ou não). Se vários sinais chegarem enquanto um está sendo tratado, apenas mais um é disparado quando o manipulador retorna. Projete para tratar \"um ou mais\" eventos, não contagens exatas.\n\n🧠 ASAP — Async-Signal Avoiding Pitfalls: sinais não são enfileirados, não sirvam para contar eventos.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 41,
+        "label": "Sinais"
+      }
+    ]
+  },
+  {
+    "id": "fc-18",
+    "topic": "signals",
+    "front": "Por que variáveis globais modificadas por manipuladores de sinal devem ser declaradas volatile?",
+    "back": "Sem volatile, o compilador pode guardar a variável num registo e nunca a recarregar da memória, pelo que alterações do manipulador assíncrono são invisíveis. volatile força recarregar da memória em cada acesso.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 41,
+        "label": "Sinais"
+      }
+    ]
+  },
+  {
+    "id": "fc-19",
+    "topic": "signals",
+    "front": "O que acontece aos manipuladores personalizados de sinal quando um processo chama exec()?",
+    "back": "Manipuladores personalizados são repostos para as suas ações padrão (a nova imagem de programa não contém os endereços dos antigos manipuladores). Sinais explicitamente definidos como SIG_IGN permanecem ignorados.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 41,
+        "label": "Sinais"
+      }
+    ]
+  },
+  {
+    "id": "fc-20",
+    "topic": "signals",
+    "front": "Quais sinais não podem ser capturados, ignorados, ou tratados por código de utilizador?",
+    "back": "SIGKILL (9) e SIGSTOP. O kernel reserva estes para controlo absoluto do sistema; permitir que código de utilizador os tratasse tornaria processos unkillable.\n\n🧠 UNGO — Unstoppable Non-ignorable Global Operations: SIGKILL e SIGSTOP não podem ser capturados, ignorados ou bloqueados.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 41,
+        "label": "Sinais"
+      }
+    ]
+  },
+  {
+    "id": "fc-21",
+    "topic": "signals",
+    "front": "Quais são as boas práticas para manipuladores de sinal?",
+    "back": "Mantenha manipuladores curtos, use apenas funções async-signal-safe, defina uma flag volatile sig_atomic_t e retorne, declare a flag volatile, e use sig_atomic_t para garantir leitura/escrita atómica.\n\n🧠 ASAP — Async-Signal Avoiding Pitfalls: handlers curtos, funções async-signal-safe, flag volatile sig_atomic_t.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T5.pdf",
+        "page": 41,
+        "label": "Sinais"
+      }
+    ]
+  },
+  {
+    "id": "fc-22",
+    "topic": "threads",
+    "front": "O que é uma corrida de dados (data race)?",
+    "back": "Duas ou mais threads acedem à mesma variável concorrentemente sem sincronização, e pelo menos um acesso é uma escrita. Resultado: valor final imprevisível e comportamento indefinido.\n\n🧠 RACE — Read-modify-write Access Corrupts Everything: acesso concorrente com pelo menos uma escrita e sem sincronização.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "fc-23",
+    "topic": "threads",
+    "front": "Volatile proporciona thread-safety?",
+    "back": "Não. volatile evita cache do compilador mas não garante atomicidade, ordenação, ou visibilidade de memória entre threads. Use mutexes ou semáforos para thread-safety.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "fc-24",
+    "topic": "threads",
+    "front": "Por que é que trancar uma variável partilhada dentro de um ciclo quente degrada severamente o desempenho?",
+    "back": "Contenção elevada e serialização. Threads gastam a maioria do tempo à espera do lock em vez de computar. Solução: acumule numa variável local e tranque apenas uma vez no final.\n\n🧠 REG — Register Execution Guarantee: acumule em registo local e tranque só uma vez no fim.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "fc-25",
+    "topic": "threads",
+    "front": "O que é false sharing?",
+    "back": "Slots adjacentes de acumulador per-thread numa array partilham uma linha de cache. Quando uma thread escreve, a coerência de cache força outras threads a recarregar as suas linhas, reduzindo paralelismo. Solução: espaçar slots uma linha de cache em separado.\n\n🧠 LINE — Locations Incurring Needless Exclusions: variáveis independentes na mesma cache line invalidam-se mutuamente.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "fc-26",
+    "topic": "threads",
+    "front": "Por que deve evitar printf() dentro de funções concorrentes de thread?",
+    "back": "A saída de printf() não é atómica; chamadas concorrentes intercalam-se e produzem saída corrompida. Use snprintf() numa buffer local e write() uma vez, que é atómica até PIPE_BUF.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "fc-27",
+    "topic": "threads",
+    "front": "Nomeie três funções C padrão não-reentrantes e os seus substitutos reentrantes.",
+    "back": "strtok/strtok_r (saveptr fornecido pelo chamador), rand/rand_r (variante reentrante), asctime/strftime (formata na buffer do chamador). Usam estado estático oculto; versões reentrantes deixam o chamador gerir o estado.\n\n🧠 SAFE — Secure Access Free of Errors: funções reentrantes não podem depender de estado global ou estático partilhado.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "fc-28",
+    "topic": "threads",
+    "front": "Por que é que passar &i de um ciclo de criação de threads causa problemas?",
+    "back": "Todas as threads recebem o mesmo endereço de memória. main incrementa i antes das threads o lerem, pelo que múltiplas threads veem o mesmo valor final ou lixo. Solução: armazenar cada argumento num elemento de array separado ou alocação heap.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "fc-29",
+    "topic": "threads",
+    "front": "O que aconta se main() retornar enquanto threads worker ainda estão em execução?",
+    "back": "O processo sai imediatamente via exit(0) implícita, terminando todas as threads. Solução: pthread_join() cada thread antes de retornar, ou pthread_exit(NULL) de forma a o processo sobreviver.\n\n🧠 JOIN — Job Operations Integrating Network: sem pthread_join()/pthread_exit(), o processo sai e mata todas as threads.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "fc-30",
+    "topic": "threads",
+    "front": "Qual é a diferença entre thread-safe e reentrante?",
+    "back": "Thread-safe significa múltiplas threads podem chamar a função concorrentemente (tipicamente via locks internos). Reentrante significa a mesma thread pode chamá-la recursivamente (ou de um manipulador de sinal). Todas as funções reentrantes são thread-safe, mas não vice-versa.\n\n🧠 SAFE — Secure Access Free of Errors: toda a função reentrante é thread-safe, mas nem toda thread-safe é reentrante.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T9.pdf",
+        "page": 3,
+        "label": "A abstração de thread"
+      }
+    ]
+  },
+  {
+    "id": "fc-31",
+    "topic": "sync",
+    "front": "Quais são as quatro condições necessárias e suficientes para deadlock?",
+    "back": "Exclusão mútua, hold-and-wait (manter um recurso enquanto aguarda outro), sem preempção (não pode reclamar forçadamente), e espera circular (A aguarda B, B aguarda A). Todos os quatro devem ocorrer simultaneamente.\n\n🧠 DEAD — Deadlock Entails Absolute Devastation: exclusão mútua, hold-and-wait, sem preempção e espera circular, todas em simultâneo.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-32",
+    "topic": "sync",
+    "front": "Como é que a ordem inconsistente de locks causa deadlock?",
+    "back": "Processo A adquire mutex depois aguarda slots; Processo B adquire slots depois aguarda mutex. Espera circular resulta. Solução: sempre adquira semáforos na mesma ordem em cada processo.\n\n🧠 DEAD — Deadlock Entails Absolute Devastation: ordem inconsistente de aquisição de locks gera espera circular.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-33",
+    "topic": "sync",
+    "front": "Defina uma secção crítica.",
+    "back": "Uma região de código onde um processo acede ou modifica dados partilhados. Apenas um processo deve executar a sua secção crítica por vez; a entrada é controlada por um semáforo, mutex, ou primitiva de sincronização similar.\n\n🧠 CS — Control Sequence: região onde só um processo de cada vez acede aos dados partilhados.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-34",
+    "topic": "sync",
+    "front": "Por que deve verificar uma condição e agir sobre ela ser atómico?",
+    "back": "Se a verificação e ação forem separadas, outro processo pode modificar os dados partilhados entre elas, invalidando a decisão. Solução: adquira o lock primeiro, depois teste e aja enquanto o detém.\n\n🧠 RACE — Read-modify-write Access Corrupts Everything: separar verificação e ação permite que outro processo altere o estado entretanto.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-35",
+    "topic": "sync",
+    "front": "O que acontece quando sem_wait() é chamado num semáforo com valor 0?",
+    "back": "O processo bloqueia no kernel até outro processo chamar sem_post() no mesmo semáforo, incrementando o seu valor. O processo bloqueado então atomicamente decrementa e retoma.\n\n🧠 SEMA — Synchronized Event Mutex Allocator: down()/sem_wait() bloqueia passivamente até outro processo fazer up()/sem_post().",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-36",
+    "topic": "sync",
+    "front": "Por que é sem_getvalue() inadequada para decisões de sincronização?",
+    "back": "O valor pode mudar imediatamente após sem_getvalue() retornar. Lógica baseada no snapshot comporta-se incorretamente. Use sem_wait() ou sem_trywait() para testar e decrementar atomicamente; reserve sem_getvalue() para saída de debug.\n\n🧠 POSIX — Portable Operating System Interface for X-sync: sem_getvalue() é só para debug, nunca para decisões de sincronização.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-37",
+    "topic": "sync",
+    "front": "Qual é a diferença entre espera passiva e espera ativa?",
+    "back": "Espera passiva bloqueia no kernel (via sem_wait) e cede CPU, retomando apenas quando sinalizado. Espera ativa gira num ciclo verificando uma flag, desperdiçando ciclos de CPU e escalando mal. Use espera passiva.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-38",
+    "topic": "sync",
+    "front": "Defina inversão de prioridades.",
+    "back": "Uma tarefa de baixa prioridade detém um lock que uma tarefa de alta prioridade necessita, bloqueando a tarefa de alta prioridade. A tarefa de alta prioridade só é executada após a tarefa de baixa prioridade libertar o lock, invertendo prioridade.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-39",
+    "topic": "sync",
+    "front": "Por que é que semáforos nomeados persistem após uma execução com crash?",
+    "back": "Semáforos nomeados POSIX são persistentes no sistema até explicitamente desvinculados com sem_unlink(). Fechar (sem_close) ou desassociar não os remove. Designe um processo para chamar sem_unlink() durante encerramento.\n\n🧠 POSIX — Portable Operating System Interface for X-sync: sem_unlink() é a única forma de remover um semáforo nomeado do sistema.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-40",
+    "topic": "memory",
+    "front": "Por que é que memória partilhada POSIX persiste após close() e munmap()?",
+    "back": "Objetos de memória partilhada são persistentes no sistema e sobrevivem terminação de processo até explicitamente removidos com shm_unlink(). close() e munmap() apenas desligam o processo; não removem o objeto.\n\n🧠 MAP — Mapeamento de Área Partilhada: só shm_unlink() remove o objeto; close()/munmap() apenas desligam o processo.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "fc-41",
+    "topic": "memory",
+    "front": "O que faz ftruncate() após shm_open() e por que é essencial?",
+    "back": "ftruncate() define o tamanho do objeto de memória partilhada recém-criado e o inicializa a zero. shm_open cria um objeto de tamanho zero; sem ftruncate, não há espaço utilizável para mmap.\n\n🧠 MAP — Mapeamento de Área Partilhada: shm_open() cria um objeto de tamanho zero, ftruncate() é que lhe dá espaço utilizável.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "fc-42",
+    "topic": "memory",
+    "front": "Qual é a relação entre endereço virtual, número de página, e offset?",
+    "back": "Endereço virtual = (número de página << page_offset_bits) + offset. O MMU traduz o número de página através de uma tabela de páginas para um frame físico; o offset seleciona bytes dentro do frame.\n\n🧠 PTE — Página de Tradução de Endereços: a PTE mapeia o número de página para o frame físico; o offset seleciona o byte.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "fc-43",
+    "topic": "memory",
+    "front": "Qual é o papel da MMU (Memory Management Unit)?",
+    "back": "A MMU traduz endereços virtuais em endereços físicos usando a tabela de páginas e cache TLB. Impõe permissões de acesso e trata faltas de página quando páginas não estão residentes.\n\n🧠 MMU — Mapeamento de Memória Universal: traduz endereços virtuais em físicos e impõe permissões de acesso.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "fc-44",
+    "topic": "memory",
+    "front": "Por que é que apontadores absolutos armazenados em memória partilhada são inválidos para outros processos?",
+    "back": "Cada processo mapeia o segmento partilhado no seu próprio espaço de endereços virtual em localizações diferentes (com mmap(NULL, ...)). Um valor de apontador válido no espaço de endereços de um processo é sem sentido no de outro. Armazene offsets ou índices em vez disso.\n\n🧠 SHM — Segmento de Hiper Memória: cada processo mapeia o segmento em endereços virtuais diferentes, por isso ponteiros absolutos não fazem sentido no outro processo.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "fc-45",
+    "topic": "memory",
+    "front": "Com que devem ser consistentes os flags de proteção de mmap()?",
+    "back": "O parâmetro prot de mmap() deve ser consistente com os flags de acesso de shm_open(). Não use O_RDONLY com PROT_WRITE, ou O_WRONLY com PROT_READ. Pareie O_RDWR com PROT_READ|PROT_WRITE.\n\n🧠 MAP — Mapeamento de Área Partilhada: o prot de mmap() tem de ser consistente com as flags de acesso de shm_open().",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T4.pdf",
+        "page": 4,
+        "label": "Memória virtual"
+      }
+    ]
+  },
+  {
+    "id": "fc-46",
+    "topic": "scheduling",
+    "front": "Defina o estado Pronto de um processo.",
+    "back": "Um processo está pronto quando está preparado para correr (todos os recursos alocados exceto CPU) mas não está atualmente no processador. Processos em Pronto movem-se para Em execução quando o escalonador os seleciona.\n\n🧠 GAMER — Gerado → Aguarda → Manda → Emperrado → Reformado: \"Aguarda\" é o Ready, pronto para a CPU mas ainda na fila.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-47",
+    "topic": "scheduling",
+    "front": "Defina o estado Em execução de um processo.",
+    "back": "Um processo está em execução quando está a executar atualmente na CPU. Num sistema de CPU única, exatamente um processo está em execução; em multicore, um por core.\n\n🧠 GAMER — Gerado → Aguarda → Manda → Emperrado → Reformado: \"Manda\" é o Running, a executar mesmo na CPU.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-48",
+    "topic": "scheduling",
+    "front": "Defina o estado À espera de um processo.",
+    "back": "Um processo está à espera (ou bloqueado) quando não pode prosseguir porque aguarda um evento tal como conclusão de I/O ou disponibilidade de um recurso. Transita para Pronto quando o evento ocorre.\n\n🧠 GAMER — Gerado → Aguarda → Manda → Emperrado → Reformado: \"Emperrado\" é o Waiting/Blocked, à espera de um evento.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-49",
+    "topic": "scheduling",
+    "front": "O que é escalonamento com preempção?",
+    "back": "O escalonador pode remover forçadamente o processo em execução da CPU após a sua fatia de tempo expirar ou quando um processo de maior prioridade fica pronto, movendo-o para estado Pronto. Contraste com não-preemptivo (processo corre até conclusão).\n\n🧠 TIC — Timer Interrompe CPU: sem temporizador de hardware não há preempção.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T11.pdf",
+        "page": 3,
+        "label": "Escalonamento de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc-50",
+    "topic": "sync",
+    "front": "Quando deve usar um semáforo vs um mutex vs uma variável de condição?",
+    "back": "Semáforo: contagem geral ou exclusão mútua. Mutex: lock binário com propriedade (apenas a thread que trancou pode destrancá-lo). Variável de condição: aguardar que um predicado se torne verdadeiro enquanto liberta/readquire atomicamente um mutex (usado com mutexes).",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc2324-1",
+    "topic": "sync",
+    "front": "Num bounded buffer (fila de impressão) com produtores e consumidores usando pthread_mutex e pthread_cond_t, porque é que a condição de espera deve ser testada num ciclo `while` e não num `if`?",
+    "back": "Porque entre a thread ser acordada por um sinal/broadcast e conseguir readquirir o mutex, outra thread pode já ter alterado o estado do buffer (por exemplo enchido-o de novo); o `while` garante que a condição real (fila cheia/vazia) é reverificada antes de avançar, evitando acordar por engano (spurious wakeup) ou condições de corrida.\n\n🧠 WAIT — Wakeup After Intermediate Trigger: o cond_wait pode sofrer spurious wakeup ou perder a corrida para outra thread, por isso reavalia-se sempre em while.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc2324-2",
+    "topic": "sync",
+    "front": "Como implementar em C, usando 1 mutex e 1 (ou 2) variável(is) de condição, uma alternância estrita entre exatamente duas threads (uma gera dados, a outra consome), garantindo que a geradora nunca avança para o item seguinte antes da consumidora terminar o atual?",
+    "back": "Usar uma flag partilhada (ex. `int turno`) protegida pelo mutex: a thread geradora produz os dados, muda a flag para 'pronto' e faz `pthread_cond_signal`; a thread consumidora espera em `pthread_cond_wait` enquanto a flag não indicar 'pronto', processa os dados, repõe a flag para 'à espera' e sinaliza de volta a geradora, que só então avança para o item seguinte — implementando um handoff (ping-pong) em vez de um buffer livre.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  },
+  {
+    "id": "fc2324-3",
+    "topic": "sync",
+    "front": "No problema clássico dos leitores/escritores com prioridade de leitores, que variáveis e semáforos/mutex são tipicamente necessários e qual a regra de acesso dos escritores?",
+    "back": "Normalmente usa-se um contador `n_leitores` protegido por um mutex (para incrementar/decrementar em exclusão mútua) e um semáforo/mutex `acesso_recurso` que o primeiro leitor bloqueia e o último leitor liberta; os escritores só conseguem obter `acesso_recurso` quando não há nenhum leitor ativo, e enquanto houver leitores a chegar estes continuam a ter prioridade, podendo levar os escritores a esperar indefinidamente (starvation) nesta variante.\n\n🧠 RW — Readers Writers: o contador de leitores protegido por mutex bloqueia os escritores só enquanto houver leitores ativos.",
+    "theoryRefs": [
+      {
+        "pdf": "SCOMP2526-T6.pdf",
+        "page": 18,
+        "label": "Sincronização de processos I"
+      }
+    ]
+  }
+]
