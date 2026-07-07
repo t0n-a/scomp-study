@@ -7,8 +7,8 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const LAB_DIR = path.join(__dirname, '.lab')
-const RUN_TIMEOUT_S = 5
-const WSL_KILL_TIMEOUT_MS = 30_000 // backstop so a hung wsl call never wedges the server
+const RUN_TIMEOUT_S = 30
+const WSL_KILL_TIMEOUT_MS = 60_000 // backstop so a hung wsl call never wedges the server
 
 // Escape a string for safe inclusion inside single quotes in a bash script.
 function shq(s) {
@@ -25,7 +25,7 @@ function runWsl(script) {
         if (err && err.code === 'ENOENT') {
           resolve({ ok: false, error: 'WSL not found — is WSL installed and on PATH?' })
         } else if (err && err.killed) {
-          resolve({ ok: false, error: 'WSL call timed out (killed after 30s).' })
+          resolve({ ok: false, error: 'WSL call timed out (killed after 60s).' })
         } else {
           // err.code is the process exit code when the process ran but exited non-zero.
           const exitCode = err ? (typeof err.code === 'number' ? err.code : 1) : 0
