@@ -213,7 +213,7 @@ export default function Ex1() {
       </details>
 
       <details>
-        <summary>Preâmbulo — includes + #defines (fixo, não se treina)</summary>
+        <summary>Includes (fixo, não se treina)</summary>
         <pre className="ex1-statement">{exercise.preamble}</pre>
       </details>
 
