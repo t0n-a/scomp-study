@@ -1223,3 +1223,49 @@ hr {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Exercícios 1 (drill bloco a bloco) ---- */
+
+.ex1-statement {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin: 10px 0;
+}
+
+.ex1-note {
+  font-size: 0.85rem;
+  margin: 4px 0 16px;
+}
+
+.ex1-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ex1-block-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+
+.ex1-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.ex1-block-hint {
+  font-size: 0.85rem;
+  margin: 4px 0 10px;
+}

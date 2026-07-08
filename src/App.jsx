@@ -5,6 +5,7 @@ import Tracer from './pages/Tracer.jsx'
 import Exam from './pages/Exam.jsx'
 import Flashcards from './pages/Flashcards.jsx'
 import CodeLab from './pages/CodeLab.jsx'
+import Ex1 from './pages/Ex1.jsx'
 import Guides from './pages/Guides.jsx'
 import Course from './pages/Course.jsx'
 
@@ -12,6 +13,7 @@ const TABS = [
   { id: 'home', label: '~' },
   { id: 'course', label: './curso' },
   { id: 'drill', label: './drill' },
+  { id: 'ex1', label: './ex1' },
   { id: 'tracer', label: './traços' },
   { id: 'exam', label: './exame' },
   { id: 'flashcards', label: './flashcards' },
@@ -70,6 +72,9 @@ export default function App() {
       </div>
       <div className={tab === 'drill' ? '' : 'tab-hidden'}>
         <Drill />
+      </div>
+      <div className={tab === 'ex1' ? '' : 'tab-hidden'}>
+        <Ex1 />
       </div>
       <div className={tab === 'tracer' ? '' : 'tab-hidden'}>
         <Tracer />
