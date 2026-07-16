@@ -1903,5 +1903,1960 @@
         "label": "Escalonamento de processos I"
       }
     ]
+  },
+  {
+    "id": "cp1-t-1",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "processes",
+    "question": "Which of the following mechanisms is essential for an operating system to safely provide privileged services to user programs while maintaining protection between user and kernel code?",
+    "code": null,
+    "options": [
+      "Direct invocation of kernel procedures through shared memory",
+      "Execution of protected instructions directly by user processes",
+      "A trap instruction that transfers control from user mode to kernel mode",
+      "Periodic hardware timer interrupts that enable preemptive scheduling"
+    ],
+    "correctIndex": 2,
+    "explanation": "A instrução trap é o mecanismo controlado que permite a um programa em modo utilizador pedir serviços privilegiados ao kernel, mudando de modo de forma segura e supervisionada pelo hardware. As restantes opções ou violam a proteção (acesso direto a estruturas do kernel, execução de instruções privilegiadas em user mode) ou são mecanismos não relacionados diretamente com este pedido de serviço (interrupções de timer servem para escalonamento preemptivo, não para pedir serviços ao SO).",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-2",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "scheduling",
+    "question": "Why would cooperative multitasking be unsuitable for modern operating systems that must guarantee fair CPU allocation?",
+    "code": null,
+    "options": [
+      "Because cooperative multitasking prevents interrupts from occurring during I/O operations",
+      "Because processes may fail to voluntarily relinquish the CPU, preventing the OS from regaining control",
+      "Because cooperative multitasking disables hardware timer interrupts",
+      "Because context switches cannot occur when processes are blocked on I/O"
+    ],
+    "correctIndex": 1,
+    "explanation": "Em multitasking cooperativo, o SO depende da boa vontade do processo para libertar o CPU; um processo mal comportado (ou com um ciclo infinito) pode nunca devolver o controlo, impedindo qualquer garantia de partilha justa. É por isso que os SOs modernos usam preempção baseada em interrupções de timer, que não dependem da cooperação do processo.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-3",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "memory",
+    "question": "Which statement best explains why two processes can use the same virtual address without interfering with each other?",
+    "code": null,
+    "options": [
+      "The OS assigns each process a unique segment descriptor enforced by the CPU scheduler",
+      "Each process has a separate page table that maps virtual addresses to potentially different physical addresses",
+      "Hardware interrupts isolate memory accesses between processes",
+      "The kernel reserves all low virtual addresses exclusively for user processes"
+    ],
+    "correctIndex": 1,
+    "explanation": "Cada processo tem a sua própria tabela de páginas, mantida pelo SO e usada pela MMU, que traduz o mesmo endereço virtual para endereços físicos diferentes consoante o processo. Isto dá a cada processo a ilusão de um espaço de endereçamento próprio, isolado dos restantes, sem depender de escalonador nem de interrupções para essa isolação.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-4",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "scheduling",
+    "question": "Consider the relationship between scheduler and dispatcher in an operating system. Which statement correctly characterizes their roles?",
+    "code": null,
+    "options": [
+      "The scheduler performs the context switch while the dispatcher determines scheduling policy",
+      "The dispatcher determines which process should run next, while the scheduler implements the switch",
+      "The scheduler selects the next process according to scheduling policy, while the dispatcher performs the context switch and transfers CPU control",
+      "The scheduler handles interrupts, while the dispatcher handles system calls"
+    ],
+    "correctIndex": 2,
+    "explanation": "O scheduler é a componente de política: decide, segundo o algoritmo de escalonamento, qual o próximo processo a correr. O dispatcher é a componente de mecanismo: executa fisicamente a mudança de contexto (guardar/restaurar registos, PC, tabela de páginas) e entrega o CPU ao processo escolhido. As outras opções trocam ou inventam papéis que não correspondem a esta separação clássica.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-5",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "processes",
+    "question": "A user program invokes the wrapper function open() from the C standard library. Which sequence best describes what occurs internally?",
+    "code": null,
+    "options": [
+      "The library directly accesses the filesystem driver through shared memory",
+      "The wrapper function places arguments in registers and executes a trap instruction to invoke the kernel system call",
+      "The compiler replaces the function call with inline kernel instructions at compile time",
+      "The program temporarily switches to kernel mode before executing the library function"
+    ],
+    "correctIndex": 1,
+    "explanation": "A função open() da libc é apenas um wrapper: coloca o número da system call e os argumentos em registos convencionados e executa uma instrução trap, transferindo o controlo para o kernel em modo protegido. O código do kernel é que efetivamente acede ao sistema de ficheiros; não há acesso direto via memória partilhada nem inlining de código do kernel em tempo de compilação.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-6",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "processes",
+    "question": "Which of the following best illustrates the separation between mechanism and policy in operating system design?",
+    "code": null,
+    "options": [
+      "The kernel implements context switching, while the scheduler decides which process should run next",
+      "The kernel implements the filesystem interface, while applications decide how files are stored on disk",
+      "The hardware timer decides which process runs next, while the kernel performs context switching",
+      "The MMU enforces memory protection while the OS decides how memory is allocated to processes"
+    ],
+    "correctIndex": 0,
+    "explanation": "O princípio mecanismo/política diz que o SO deve fornecer mecanismos genéricos (como a troca de contexto) separados das decisões de política (qual o próximo processo a escolher). O exemplo canónico é exatamente o par dispatcher/scheduler: o dispatcher (mecanismo) executa a troca, o scheduler (política) decide quem corre a seguir.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-7",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "processes",
+    "question": "Which characteristic most fundamentally distinguishes a microkernel architecture from a traditional monolithic kernel?",
+    "code": null,
+    "options": [
+      "The kernel uses loadable modules to dynamically extend functionality",
+      "Most operating system services execute in user space and communicate via IPC",
+      "All hardware drivers execute in kernel mode for performance reasons",
+      "The kernel includes scheduling and virtual memory but excludes interrupt handling"
+    ],
+    "correctIndex": 1,
+    "explanation": "Num microkernel, o kernel mantém apenas as funcionalidades essenciais (comunicação entre processos, escalonamento básico, gestão mínima de memória), e serviços como sistemas de ficheiros ou drivers correm como processos em user space, comunicando por IPC. É esta deslocação de serviços para fora do kernel que caracteriza fundamentalmente a arquitetura, ao contrário do kernel monolítico onde tudo corre em modo kernel.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-8",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "processes",
+    "question": "Consider the behaviour of the fork() system call in UNIX-like operating systems. Which statement correctly describes its semantics?",
+    "code": null,
+    "options": [
+      "It creates a child process that shares the parent's entire address space and execution context",
+      "It returns the same value to both parent and child, but sets different environment variables",
+      "It is invoked once but returns twice: returning the child PID to the parent and 0 to the child",
+      "It duplicates only the program text while allocating fresh memory for all other structures"
+    ],
+    "correctIndex": 2,
+    "explanation": "fork() é chamado uma vez pelo processo pai mas retorna duas vezes: no pai devolve o PID do filho, e no filho devolve 0, permitindo que ambos distingam o seu papel a partir do mesmo ponto do código. O filho recebe uma cópia (logicamente independente, tipicamente via copy-on-write) do espaço de endereçamento do pai, não o partilha diretamente.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-9",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "processes",
+    "question": "A server designed using non-blocking I/O and select() typically blocks only within the select() call. What is the primary advantage of this design?",
+    "code": null,
+    "options": [
+      "It allows each client connection to run in a separate process",
+      "It eliminates the need for context switching between kernel and user mode",
+      "It allows a single process to efficiently manage many concurrent connections",
+      "It ensures that all I/O operations are executed synchronously"
+    ],
+    "correctIndex": 2,
+    "explanation": "Com select() e I/O não bloqueante, um único processo consegue monitorizar vários descritores de ficheiro em simultâneo e só bloqueia à espera de que algum fique pronto, evitando ter de criar um processo/thread por ligação. Isto reduz drasticamente o overhead de gestão de muitas ligações concorrentes num único fluxo de execução.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-10",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "processes",
+    "question": "A process terminates and becomes a zombie process. Which statement best describes its state?",
+    "code": null,
+    "options": [
+      "The process is still executing but waiting for I/O completion",
+      "The process has terminated, but its parent has not yet retrieved its exit status",
+      "The process has been suspended by the scheduler and cannot be resumed",
+      "The process continues running in kernel mode until its memory is reclaimed"
+    ],
+    "correctIndex": 1,
+    "explanation": "Um processo zombie já terminou e libertou os seus recursos, mas a sua entrada na tabela de processos (incluindo o exit status) mantém-se até que o processo pai execute wait()/waitpid() e recolha essa informação. Só depois disso a entrada é definitivamente removida pelo kernel.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-11",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "memory",
+    "question": "Which hardware component performs virtual-to-physical address translation during program execution?",
+    "code": null,
+    "options": [
+      "The CPU scheduler",
+      "The Translation Lookaside Buffer (TLB)",
+      "The Memory Management Unit (MMU)",
+      "The disk controller"
+    ],
+    "correctIndex": 2,
+    "explanation": "A MMU é o componente de hardware responsável por traduzir, em tempo de execução, cada endereço virtual gerado pelo CPU no correspondente endereço físico, usando a tabela de páginas do processo. A TLB é apenas uma cache dessas traduções para acelerar o processo, não o mecanismo de tradução em si.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-12",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "memory",
+    "question": "Which statement best explains the fundamental role of virtual memory in modern operating systems?",
+    "code": null,
+    "options": [
+      "It allows programs to access physical memory addresses directly for maximum performance",
+      "It provides each process with the illusion of a large, contiguous address space independent of the actual physical memory layout",
+      "It eliminates the need for memory protection mechanisms in hardware",
+      "It guarantees that every memory reference is served from main memory rather than disk"
+    ],
+    "correctIndex": 1,
+    "explanation": "A memória virtual abstrai a memória física real, dando a cada processo a ilusão de um espaço de endereçamento grande, contíguo e privado, independentemente de como a memória física está efetivamente organizada ou fragmentada. Isto simplifica a programação e permite isolamento entre processos, sem garantir que tudo esteja sempre em RAM (pode haver paging para disco).",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-13",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "memory",
+    "question": "What happens when a process references a virtual page that is not currently present in physical memory?",
+    "code": null,
+    "options": [
+      "The CPU immediately terminates the process",
+      "The hardware generates a trap, and the operating system handles the page fault",
+      "The MMU automatically loads the page from disk without OS involvement",
+      "The process is suspended permanently until manually restarted"
+    ],
+    "correctIndex": 1,
+    "explanation": "Quando a MMU não encontra uma tradução válida para a página pedida, gera um trap (page fault) que transfere o controlo para o SO. É o SO, e não a MMU, que decide como tratar a falta de página — por exemplo, carregando a página do disco e atualizando a tabela de páginas antes de reexecutar a instrução.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-14",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "memory",
+    "question": "Why does the Translation Lookaside Buffer (TLB) significantly improve the performance of virtual memory systems?",
+    "code": null,
+    "options": [
+      "It eliminates the need for page tables",
+      "It caches recently used virtual-to-physical address translations",
+      "It stores recently accessed data values instead of addresses",
+      "It prevents page faults from occurring"
+    ],
+    "correctIndex": 1,
+    "explanation": "A TLB é uma cache de hardware que guarda as traduções virtual→física usadas mais recentemente, evitando o percurso completo pela tabela de páginas (possivelmente com vários níveis) em cada acesso. Ela não substitui a tabela de páginas nem impede page faults; apenas acelera o caso comum em que a tradução já é conhecida.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-t-15",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo T)",
+    "topic": "memory",
+    "question": "Two processes map the same physical page into their address spaces as read-only shared code. Which statement correctly describes this situation?",
+    "code": null,
+    "options": [
+      "Both processes must use the same virtual address to access the page",
+      "The processes may use different virtual addresses that map to the same physical page",
+      "The page must be copied into separate physical pages for each process",
+      "The MMU cannot enforce read-only permissions for shared pages"
+    ],
+    "correctIndex": 1,
+    "explanation": "Cada processo tem a sua própria tabela de páginas, pelo que a mesma página física pode estar mapeada em endereços virtuais diferentes em cada processo — não é necessário que coincidam. A MMU consegue perfeitamente marcar essas entradas como só-leitura, e não é preciso duplicar a página física, já que o conteúdo (código) é partilhado.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-1",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "Which of the following elements is not part of the process context maintained by the operating system?",
+    "code": null,
+    "options": [
+      "Program counter and CPU registers",
+      "Condition codes and stack pointer",
+      "Source code of the program being executed",
+      "Virtual memory structures used by the process"
+    ],
+    "correctIndex": 2,
+    "explanation": "O contexto de um processo inclui o estado necessário para o retomar corretamente — registos, PC, stack pointer, códigos de condição e estruturas de memória virtual (tabela de páginas). O código-fonte do programa não faz parte deste contexto: o que existe em execução é o código objeto/binário carregado em memória, não o ficheiro fonte.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-2",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "After a successful fork() call in a UNIX-like system, which statement correctly describes the relationship between the parent and child processes?",
+    "code": null,
+    "options": [
+      "Both processes share writable memory segments permanently",
+      "Both processes begin execution at the start of the program",
+      "Both processes continue execution from the instruction immediately after fork()",
+      "The child process starts execution only after the parent terminates"
+    ],
+    "correctIndex": 2,
+    "explanation": "Depois de fork(), pai e filho são processos independentes que continuam a execução exatamente no ponto seguinte à chamada, cada um com a sua cópia do valor de retorno. Não partilham memória escrita de forma permanente (é copy-on-write, com cópia na primeira escrita) e não há qualquer ordem de dependência entre a execução de um e do outro.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-3",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "Consider the following code fragment. Which set of outputs is guaranteed?",
+    "code": "int x = 5;\npid_t p = fork();\n\nif(p == 0){\n     x = x + 2;\n}\n\nprintf(\"%d\\n\", x);",
+    "options": [
+      "The program always prints 5 once and 7 once",
+      "The program always prints 7 twice",
+      "The program may print 5 or 7, but only one line will be printed",
+      "The program always prints 5 twice"
+    ],
+    "correctIndex": 0,
+    "explanation": "Depois de fork(), pai e filho têm cópias independentes de x (copy-on-write). No filho (p==0), x passa a valer 7; no pai, x mantém-se 5. Cada um dos dois processos executa o seu próprio printf, pelo que a saída garantida é sempre um 5 (do pai) e um 7 (do filho), embora a ordem relativa entre as duas linhas não seja determinística.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-4",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "Which property of Copy-on-Write (COW) memory management is essential to the efficiency of fork()?",
+    "code": null,
+    "options": [
+      "The child process immediately duplicates the entire address space of the parent",
+      "Parent and child initially share memory pages until a modification occurs",
+      "The operating system prevents both processes from modifying memory",
+      "The child process executes in the same address space as the parent permanently"
+    ],
+    "correctIndex": 1,
+    "explanation": "Com COW, fork() não copia fisicamente todas as páginas de memória do pai; em vez disso, pai e filho partilham inicialmente as mesmas páginas físicas, marcadas como só-leitura. Só quando um dos processos tenta escrever numa página é que o SO faz uma cópia real dessa página, poupando tempo e memória em muitos casos (nomeadamente quando se segue um exec()).",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-5",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "A parent process executes the following code. Which statement about the output is guaranteed?",
+    "code": "pid_t pid = fork();\nif(pid > 0){\n     wait(NULL);\n     printf(\"Parent resumes\\n\");\n}else{\n     printf(\"Child executing\\n\");\n     exit(0);\n}",
+    "options": [
+      "“Parent resumes” may appear before “Child executing”",
+      "“Child executing” must appear before “Parent resumes”",
+      "The order of the two lines is non-deterministic",
+      "Both lines are printed by the same process"
+    ],
+    "correctIndex": 1,
+    "explanation": "O pai chama wait(NULL) logo após o fork(), o que o bloqueia até o filho terminar. Como o filho imprime a sua mensagem e só depois faz exit(0), o pai só pode desbloquear e imprimir \"Parent resumes\" depois de o filho já ter terminado (e portanto já ter impresso a sua linha). Isto garante a ordem relativa entre as duas mensagens.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-6",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "Which statement correctly describes the behavior of the exec() family of functions?",
+    "code": null,
+    "options": [
+      "They create a new process and execute a different program in it",
+      "They replace the current process image while keeping the same PID",
+      "They duplicate the parent process and then load a new program",
+      "They execute a new program and return to the original code when it finishes"
+    ],
+    "correctIndex": 1,
+    "explanation": "As funções exec() não criam um novo processo: substituem o código, dados e stack do processo atual pelos do novo programa, mantendo o mesmo PID e a maioria dos recursos do processo (como descritores de ficheiro, salvo os marcados close-on-exec). Não há retorno ao código original, porque este deixa de existir em memória após o exec bem-sucedido.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-7",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "Which of the following statements about exec() functions return values is correct?",
+    "code": null,
+    "options": [
+      "exec() functions return 0 on success and −1 on failure",
+      "exec() functions return the PID of the new program if successful",
+      "exec() functions only return if an error occurs during its setup",
+      "exec() functions always return after the executed program finishes"
+    ],
+    "correctIndex": 2,
+    "explanation": "Se exec() tiver sucesso, o programa atual é substituído e nunca há retorno ao código que fez a chamada — não existe \"valor de sucesso\" a devolver. O único caso em que exec() retorna é quando falha (por exemplo, executável não encontrado), devolvendo -1 e definindo errno.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-8",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "Consider a process that successfully executes the following code. What is guaranteed about the execution of the printf statement?",
+    "code": "execl(\"/bin/ls\", \"ls\", \"-l\", (char*)NULL);\nprintf(\"Done\\n\");",
+    "options": [
+      "It is executed after the ls program finishes",
+      "It is executed only by the parent process",
+      "It is executed only if execl() fails",
+      "It is executed before ls runs"
+    ],
+    "correctIndex": 2,
+    "explanation": "Se execl() tiver sucesso, a imagem do processo é totalmente substituída pelo programa /bin/ls, pelo que o código a seguir (o printf) deixa de existir em memória e nunca é executado. A única forma de o printf correr é se execl() falhar e retornar, mantendo o processo original a executar o código subsequente.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-9",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "Which of the following correctly describes the difference between execl() and execv()?",
+    "code": null,
+    "options": [
+      "execl() passes arguments as a list, while execv() passes them in an array",
+      "execl() searches $PATH, while execv() requires an absolute path",
+      "execl() allows environment variables to be specified, while execv() does not",
+      "execl() executes shell commands, while execv() executes binary programs"
+    ],
+    "correctIndex": 0,
+    "explanation": "A diferença fundamental entre as duas variantes está na forma como os argumentos são passados: execl() recebe-os como uma lista de argumentos variádicos terminada em NULL, enquanto execv() os recebe já organizados num array de strings (char *argv[]). Nenhuma delas está associada à pesquisa em $PATH, a variáveis de ambiente, nem à distinção entre comandos de shell e binários.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-10",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "processes",
+    "question": "A child process is created with fork() and immediately calls execvp(\"ls\", args). Which statement correctly describes what happens to the open file descriptors of the child process?",
+    "code": null,
+    "options": [
+      "All file descriptors are automatically closed before the new program starts",
+      "All file descriptors remain open unless marked with close-on-exec (FD_CLOEXEC)",
+      "Only standard descriptors (stdin, stdout, stderr) remain open",
+      "File descriptors are duplicated and assigned new numbers in the new program"
+    ],
+    "correctIndex": 1,
+    "explanation": "Ao contrário da memória do processo, a tabela de descritores de ficheiro sobrevive ao exec(): todos os descritores abertos permanecem abertos no novo programa, exceto os que tenham sido explicitamente marcados com a flag FD_CLOEXEC. Isto é frequentemente aproveitado para herdar pipes entre processos pai e filho.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-11",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "Why are signals considered asynchronous events in UNIX-like systems?",
+    "code": null,
+    "options": [
+      "Because the kernel delivers them only at fixed time intervals",
+      "Because they can arrive at any point during the execution of a process and interrupt its normal control flow",
+      "Because they are processed only after a system call completes",
+      "Because they are queued and delivered in a deterministic order"
+    ],
+    "correctIndex": 1,
+    "explanation": "Um sinal pode ser enviado a um processo em qualquer instante da sua execução, independentemente da instrução que o processo esteja a correr, interrompendo o fluxo normal para desviar para o handler (se existir). É esta imprevisibilidade temporal — não estarem ligados a um ponto fixo do código — que os torna eventos assíncronos, ao contrário de exceções síncronas como page faults ou system calls.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-12",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "Which statement correctly describes the behaviour of the pause() system call?",
+    "code": null,
+    "options": [
+      "It returns immediately when any signal is sent to the process",
+      "It returns after a signal is delivered and the handler returns",
+      "It automatically installs a handler for the received signal",
+      "It guarantees that no signals are lost while the process is paused"
+    ],
+    "correctIndex": 1,
+    "explanation": "pause() suspende o processo até que chegue um sinal cuja ação (default ou handler instalado) seja executada; depois de o handler correr e retornar, pause() também retorna. Não instala handlers por si só, nem garante que nenhum sinal se perde — se o sinal chegar antes de pause() ser chamado e o seu tratamento não o mantiver pendente, pode perder-se (ver questão 13).",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-13",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "A signal is sent to a process before the pause() call is executed, and the signal's default action is ignore. What will happen?",
+    "code": null,
+    "options": [
+      "pause() returns immediately because the signal was already delivered",
+      "pause() blocks indefinitely until another signal arrives",
+      "The process terminates because the signal is pending",
+      "The kernel queues the signal and delivers it when pause() starts"
+    ],
+    "correctIndex": 1,
+    "explanation": "Se a ação por omissão do sinal for ignorar, o sinal é simplesmente descartado no momento em que chega — não fica pendente nem tem qualquer efeito posterior. Quando o processo chamar pause() a seguir, não há nenhum evento à espera para o desbloquear, pelo que fica bloqueado indefinidamente até chegar um novo sinal com efeito de terminar ou de handler.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-14",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "Which of the following signals cannot be ignored or handled by a user-defined handler?",
+    "code": null,
+    "options": [
+      "SIGINT",
+      "SIGUSR1",
+      "SIGKILL",
+      "SIGALRM"
+    ],
+    "correctIndex": 2,
+    "explanation": "SIGKILL (e também SIGSTOP) são sinais especiais que o kernel trata sempre com a sua ação por omissão, não podendo ser capturados, bloqueados nem ignorados por nenhum processo. Isto garante que existe sempre uma forma incondicional de terminar qualquer processo, independentemente do seu comportamento face a outros sinais.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-15",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "Why is write() preferred over printf() inside a signal handler?",
+    "code": null,
+    "options": [
+      "printf() cannot output to standard output inside signal handlers",
+      "printf() may internally use non–async-signal-safe operations, potentially leading to undefined behaviour",
+      "write() is faster because it bypasses the kernel",
+      "printf() cannot print strings shorter than 16 characters inside handlers"
+    ],
+    "correctIndex": 1,
+    "explanation": "printf() usa buffers internos e outras estruturas de estado da biblioteca que não são reentrantes; se o handler interromper o programa principal exatamente no meio de outra chamada a printf(), pode corromper esse estado partilhado. write() é uma system call simples, listada como async-signal-safe pelo POSIX, e por isso é segura para usar dentro de handlers.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-16",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "Why is it recommended that a signal handler only sets a flag of type volatile sig_atomic_t and performs minimal work?",
+    "code": null,
+    "options": [
+      "Because signal handlers execute in kernel mode and cannot perform complex operations",
+      "Because handlers may run concurrently with the main program and unsafe operations may corrupt shared data",
+      "Because signals are queued and complex handlers may overflow the signal queue",
+      "Because the compiler forbids calling any library functions inside handlers"
+    ],
+    "correctIndex": 1,
+    "explanation": "Um handler pode interromper o programa principal em qualquer ponto, incluindo a meio de operações não atómicas sobre dados partilhados; se o handler também mexer nesses dados de forma não segura, pode corromper o estado. Usar apenas uma flag volatile sig_atomic_t garante uma escrita atómica e visível, sem risco de condições de corrida entre o handler e o fluxo principal.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-17",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "Which condition must be satisfied to use the sa_sigaction field of struct sigaction?",
+    "code": null,
+    "options": [
+      "The sa_mask field must block all signals",
+      "The SA_SIGINFO flag must be set in sa_flags",
+      "The signal must be a real-time signal",
+      "The process must run with root privileges"
+    ],
+    "correctIndex": 1,
+    "explanation": "struct sigaction tem uma união entre sa_handler (handler simples) e sa_sigaction (handler estendido, com informação adicional via siginfo_t). Para que o kernel saiba que deve invocar sa_sigaction em vez de sa_handler, é obrigatório definir a flag SA_SIGINFO em sa_flags; sem ela, o campo sa_sigaction é ignorado.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-18",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "For standard UNIX signals (non real-time), while a signal handler for signal S is executing, what happens if the same signal S is delivered again?",
+    "code": null,
+    "options": [
+      "Each occurrence is queued and the handler runs once per signal",
+      "The signal is discarded permanently",
+      "The kernel records only that the signal is pending, and the handler will run again once it returns",
+      "The handler is immediately re-entered recursively"
+    ],
+    "correctIndex": 2,
+    "explanation": "Os sinais standard (não real-time) não são enfileirados: enquanto o handler de S está a correr, S fica automaticamente bloqueado, e se chegarem novas ocorrências de S, o kernel apenas marca que há um S pendente (um bit, não uma contagem). Quando o handler termina, o sinal pendente é entregue uma única vez, o que significa que múltiplas ocorrências durante a execução do handler podem ser \"fundidas\" numa só entrega.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-19",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "What is the primary purpose of the sa_mask field in struct sigaction?",
+    "code": null,
+    "options": [
+      "To define which signals should be ignored by the process",
+      "To specify which additional signals should be temporarily blocked while the handler executes",
+      "To list signals that should automatically restart interrupted system calls",
+      "To identify signals that must terminate the process"
+    ],
+    "correctIndex": 1,
+    "explanation": "sa_mask permite indicar um conjunto adicional de sinais que devem ficar bloqueados durante a execução do handler (para além do próprio sinal, que é bloqueado automaticamente). Isto evita que a receção de outros sinais relacionados interrompa ou corrompa o tratamento em curso, sem afetar a política de ignorar ou terminar o processo.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp1-tp-20",
+    "source": "SCOMP 25/26 — Checkpoint 1 (Grupo TP)",
+    "topic": "signals",
+    "question": "Consider the behaviour of signal handlers across fork() and exec(). Which statement is correct?",
+    "code": null,
+    "options": [
+      "Both fork() and exec() preserve custom signal handlers",
+      "fork() resets all handlers to default actions",
+      "fork() preserves handlers, but exec() resets custom handlers to their default actions",
+      "exec() preserves handlers, but fork() resets them"
+    ],
+    "correctIndex": 2,
+    "explanation": "O filho criado por fork() herda uma cópia exata da disposição de sinais do pai, incluindo handlers instalados. Já o exec() carrega um novo programa, cujo código do handler deixa de existir em memória, pelo que o kernel repõe a ação por omissão para todos os sinais que tinham handler customizado (os que estavam a ser ignorados mantêm-se ignorados).",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-1",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "processes",
+    "question": "Which of the following statements correctly distinguishes faults from traps in synchronous exceptions?",
+    "code": null,
+    "options": [
+      "Faults always terminate the process, while traps always return to the current instruction",
+      "Faults return control to the faulting instruction if recovery is possible, whereas traps return to the next instruction after the exception",
+      "Faults are generated intentionally by software, while traps are generated unintentionally by hardware",
+      "Faults are asynchronous events, while traps are synchronous events"
+    ],
+    "correctIndex": 1,
+    "explanation": "Um fault (por exemplo, um page fault) é uma exceção que, se puder ser corrigida, leva o SO a reexecutar a mesma instrução que a causou, uma vez resolvida a condição. Um trap (por exemplo, uma system call) é intencional e o controlo regressa à instrução seguinte à que provocou o trap, não à mesma. Ambos são exceções síncronas, ligadas a instruções específicas.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-2",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "processes",
+    "question": "Which of the following statements best describes the fundamental role of a system call in modern operating systems?",
+    "code": null,
+    "options": [
+      "It allows a user program to execute privileged instructions directly in user mode",
+      "It provides a controlled mechanism for transferring execution from user mode to kernel mode to request operating system services",
+      "It enables hardware devices to interrupt user programs directly without kernel intervention",
+      "It replaces the need for exception handling by allowing applications to interact directly with hardware"
+    ],
+    "correctIndex": 1,
+    "explanation": "Uma system call é o ponto de entrada controlado e seguro através do qual um programa em user mode pede ao kernel a execução de operações privilegiadas (acesso a ficheiros, criação de processos, etc.), mudando de modo através de um trap. Não permite executar instruções privilegiadas diretamente em user mode, nem substitui a gestão de exceções — pelo contrário, é implementada como um tipo de exceção síncrona.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-3",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "memory",
+    "question": "Which of the following events would most likely lead the operating system to re-execute the same instruction after handling the exception?",
+    "code": null,
+    "options": [
+      "A trap generated by a system call",
+      "A page fault caused by accessing a page currently stored on disk",
+      "A hardware abort due to a memory parity error",
+      "A signal generated by pressing Ctrl-C"
+    ],
+    "correctIndex": 1,
+    "explanation": "Um page fault por página em disco é um fault recuperável: o SO carrega a página para memória física, atualiza a tabela de páginas, e depois reexecuta exatamente a instrução que tinha causado a falta, agora com sucesso. Traps (system calls) avançam para a instrução seguinte, aborts são normalmente fatais e não recuperáveis, e sinais como Ctrl-C não estão ligados a uma instrução específica para reexecutar.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-4",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "scheduling",
+    "question": "Which statement best explains how preemptive multitasking is implemented in most operating systems?",
+    "code": null,
+    "options": [
+      "Processes explicitly call the kernel whenever they want to relinquish the CPU",
+      "The OS periodically receives a timer interrupt and may perform a context switch",
+      "The scheduler is invoked only when a process terminates or performs I/O",
+      "Hardware automatically switches processes without kernel involvement"
+    ],
+    "correctIndex": 1,
+    "explanation": "No multitasking preemptivo, um timer de hardware gera interrupções periódicas que transferem o controlo para o kernel; nesse ponto, o SO pode decidir preemptar o processo em execução e escalonar outro, independentemente de o processo atual querer ceder o CPU. Isto garante que nenhum processo monopoliza o CPU indefinidamente, ao contrário do modelo cooperativo.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-5",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "signals",
+    "question": "When a process receives a signal in Linux, which statement is correct regarding signal delivery and handling?",
+    "code": null,
+    "options": [
+      "Signals are sent directly by hardware devices to user processes",
+      "Signals always contain detailed information about the event that triggered them",
+      "Only the kernel can send signals to processes, and the signal is identified by a small integer ID",
+      "A signal handler always replaces the interrupted instruction in the program"
+    ],
+    "correctIndex": 2,
+    "explanation": "Todos os sinais em Linux passam pelo kernel: mesmo quando outro processo os \"envia\" (kill()), é o kernel que efetivamente entrega o sinal, identificado por um pequeno número inteiro (SIGINT=2, SIGKILL=9, etc.). O hardware não envia sinais diretamente a processos, os sinais standard não trazem informação detalhada por omissão (só os real-time ou com SA_SIGINFO trazem mais contexto), e um handler não \"substitui\" a instrução interrompida — apenas desvia temporariamente o fluxo de execução.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-6",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "Why does concurrent access to shared memory by cooperating processes potentially lead to data inconsistency?",
+    "code": null,
+    "options": [
+      "Because shared memory always requires kernel mediation for each access",
+      "Because different processes may execute instructions in different orders due to scheduling and interleavings",
+      "Because shared memory disables hardware memory protection",
+      "Because the operating system serializes all accesses to shared memory"
+    ],
+    "correctIndex": 1,
+    "explanation": "Sem sincronização, o escalonador pode intercalar as instruções de dois (ou mais) processos de formas imprevisíveis, produzindo interleavings em que operações de leitura/escrita não atómicas se sobrepõem — por exemplo, o clássico problema de duas atualizações \"perdidas\" numa variável partilhada. É esta variabilidade na ordem de execução, e não qualquer mediação obrigatória do kernel, que gera as inconsistências.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-7",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "Which of the following conditions is NOT one of the classical requirements for a correct solution to the critical section problem?",
+    "code": null,
+    "options": [
+      "Mutual exclusion",
+      "Progress",
+      "Bounded waiting",
+      "Deadlock detection"
+    ],
+    "correctIndex": 3,
+    "explanation": "Os três requisitos clássicos para uma solução correta do problema da secção crítica são exclusão mútua, progresso e espera limitada (bounded waiting). Deteção de deadlock não faz parte destes requisitos — é um tópico relacionado mas distinto, associado à gestão de recursos e não à correção da entrada/saída da secção crítica.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-8",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "In the producer–consumer implementation using a shared buffer with variables in, out, and counter, why does a race condition occur in the naïve implementation using busy waiting?",
+    "code": null,
+    "options": [
+      "Because both producer and consumer modify the variable counter",
+      "Because both processes update the in index concurrently",
+      "Because both processes write to the same buffer elements simultaneously",
+      "Because the buffer indices are implemented as circular counters"
+    ],
+    "correctIndex": 0,
+    "explanation": "No produtor-consumidor com busy waiting sem locks, o produtor incrementa counter e o consumidor decrementa-o, ambos executando um ciclo ler-modificar-escrever não atómico sobre a mesma variável. Se as duas operações se intercalarem, uma atualização pode perder-se, levando a valores incorretos de counter. Já in e out são tipicamente manipulados um só por cada processo (produtor só mexe em in, consumidor só em out), pelo que não geram diretamente race condition entre si.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-9",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "Why are classical software solutions such as Peterson's algorithm not reliable on modern systems without additional mechanisms?",
+    "code": null,
+    "options": [
+      "They only work with a single processor",
+      "They rely on sequential consistency assumptions that modern compilers and processors may violate through instruction reordering",
+      "They require kernel-level privileges to manipulate shared variables",
+      "They depend on message passing instead of shared memory"
+    ],
+    "correctIndex": 1,
+    "explanation": "O algoritmo de Peterson assume que as instruções de leitura/escrita sobre variáveis partilhadas são vistas por todos os processadores exatamente pela ordem do programa (consistência sequencial). Compiladores modernos (com otimizações) e CPUs (com reordenação de instruções, write buffers) podem violar essa suposição, quebrando as garantias do algoritmo, a menos que se usem barreiras de memória ou variáveis atómicas adicionais.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-10",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "In the semaphore-based solution for the bounded producer–consumer problem with an n-element buffer, what is the primary role of the mutex semaphore?",
+    "code": null,
+    "options": [
+      "To count the number of available items in the buffer",
+      "To count the number of available slots in the buffer",
+      "To enforce mutually exclusive access to the shared buffer data structures",
+      "To notify consumers that producers have finished producing"
+    ],
+    "correctIndex": 2,
+    "explanation": "No produtor-consumidor limitado, usam-se três semáforos: full/items e empty/slots fazem sincronização de contagem (itens disponíveis / espaços livres), enquanto mutex é um semáforo binário cuja única função é garantir exclusão mútua no acesso às estruturas do buffer (índices in/out, dados) durante a inserção/remoção.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-11",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "Which of the following scenarios violates liveness but preserves safety in a concurrent system?",
+    "code": null,
+    "options": [
+      "Two processes simultaneously modify a shared variable without synchronization",
+      "A process reads inconsistent data due to a race condition",
+      "Two processes are permanently blocked waiting for each other's resources",
+      "A process accesses shared data without acquiring a lock"
+    ],
+    "correctIndex": 2,
+    "explanation": "Um deadlock — dois processos bloqueados indefinidamente à espera de recursos um do outro — não corrompe dados nem viola exclusão mútua (a segurança/safety mantém-se), mas impede que os processos alguma vez progridam, o que é uma violação de liveness (o sistema deixa de \"fazer algo de bom\" eventualmente). As outras opções descrevem violações de safety, causadas por falta de sincronização e não por bloqueio permanente.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-12",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "In the modified producer–consumer implementation where sem_wait(mutex) is placed before waiting on slots or items, what is the key issue introduced?",
+    "code": null,
+    "options": [
+      "Loss of mutual exclusion in the critical section",
+      "Violation of bounded waiting",
+      "Possibility of deadlock due to holding a lock while waiting for another resource",
+      "Starvation caused by unfair scheduling"
+    ],
+    "correctIndex": 2,
+    "explanation": "Se sem_wait(mutex) for adquirido antes de esperar por empty/full, um processo pode ficar bloqueado à espera de um slot/item enquanto ainda detém o mutex. Isso impede que o processo do outro lado (produtor ou consumidor) alguma vez consiga entrar na secção crítica para libertar esse slot/item, resultando em deadlock — os dois processos ficam à espera um do outro indefinidamente.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-13",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "Which of the following is NOT a necessary condition for a deadlock to occur?",
+    "code": null,
+    "options": [
+      "Mutual exclusion",
+      "Hold and wait",
+      "Preemption",
+      "Circular wait"
+    ],
+    "correctIndex": 2,
+    "explanation": "As quatro condições necessárias clássicas para deadlock são exclusão mútua, hold-and-wait, ausência de preempção (no preemption) e espera circular. \"Preempção\" tal como listada aqui é o oposto da condição real (que é precisamente a NÃO existência de preempção sobre os recursos), pelo que não é uma condição necessária — é a sua negação que o é.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-14",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "Why does enforcing a global lock ordering prevent deadlocks?",
+    "code": null,
+    "options": [
+      "It eliminates mutual exclusion by allowing shared access to resources",
+      "It ensures that processes release locks immediately after acquiring them",
+      "It prevents circular wait by enforcing a consistent acquisition order across all processes",
+      "It guarantees fairness among competing processes"
+    ],
+    "correctIndex": 2,
+    "explanation": "Se todos os processos forem obrigados a adquirir múltiplos locks sempre pela mesma ordem global (por exemplo, por número de identificação crescente), torna-se impossível formar um ciclo de espera entre processos, já que nenhum pode estar a segurar um lock \"maior\" à espera de um \"menor\" que outro processo já detém. Ao eliminar a possibilidade de espera circular, elimina-se uma das quatro condições necessárias para deadlock.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-15",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "In systems using non-blocking lock acquisition (e.g., sem_trywait()), why can livelock occur?",
+    "code": null,
+    "options": [
+      "Because processes may hold locks indefinitely without releasing them",
+      "Because processes repeatedly fail to acquire locks and continuously retry without making progress",
+      "Because the OS scheduler prevents processes from being executed",
+      "Because shared memory becomes inconsistent due to concurrent writes"
+    ],
+    "correctIndex": 1,
+    "explanation": "Ao contrário do deadlock, no livelock os processos não estão bloqueados — continuam ativos, mas ficam presos num ciclo de tentar adquirir o lock com sem_trywait(), falhar, libertar o que já tinham e tentar de novo, sem nunca convergirem para um estado em que ambos progridam. É um desperdício de CPU sem avanço efetivo, tipicamente causado por padrões de retry mal desenhados que colidem repetidamente.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-16",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "In the first readers–writers solution, what is the precise role of this condition?",
+    "code": "if (s->readcnt == 1) \n    sem_wait(mutex_data);",
+    "options": [
+      "It ensures that only one reader can access the shared data at a time",
+      "It allows the first reader to block writers by acquiring exclusive access to the data",
+      "It prevents race conditions on the readcnt variable",
+      "It ensures FIFO ordering among readers and writers"
+    ],
+    "correctIndex": 1,
+    "explanation": "Este trecho é executado só quando readcnt passa a 1, ou seja, quando o leitor atual é o primeiro a entrar. Nesse caso, esse leitor bloqueia mutex_data, impedindo escritores de aceder aos dados enquanto houver pelo menos um leitor ativo; os leitores seguintes não precisam de repetir esta aquisição, porque já está garantida pelo primeiro. A proteção de readcnt em si é feita por outro semáforo (normalmente chamado mutex ou mutex_readcnt), não por este.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-17",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "Consider a system implementing the first readers–writers solution. Which of the following execution patterns can lead to writer starvation?",
+    "code": null,
+    "options": [
+      "A writer arrives while no readers are active",
+      "A finite number of readers access the resource before a writer",
+      "A continuous stream of readers keeps arriving before the last reader exits",
+      "Multiple writers arrive simultaneously"
+    ],
+    "correctIndex": 2,
+    "explanation": "Na primeira solução de leitores-escritores, os leitores têm prioridade: enquanto houver pelo menos um leitor ativo, um escritor à espera não consegue entrar. Se novos leitores continuarem a chegar antes de readcnt voltar a zero (um fluxo contínuo de leitores que se sobrepõem), o escritor pode ficar à espera indefinidamente — starvation do escritor, um problema clássico desta solução.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-18",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "In the second readers–writers solution, what is the main purpose of the try_read semaphore?",
+    "code": null,
+    "options": [
+      "To protect access to the readcnt variable",
+      "To ensure mutual exclusion among writers",
+      "To act as a gate that blocks new readers when writers are waiting",
+      "To enforce FIFO ordering between readers and writers"
+    ],
+    "correctIndex": 2,
+    "explanation": "A segunda solução de leitores-escritores tenta resolver a starvation dos escritores introduzindo um semáforo de \"portão\" (try_read): quando um escritor está à espera, esse portão fecha-se, impedindo que novos leitores entrem, ainda que leitores já em curso continuem. Isto dá aos escritores oportunidade de entrar assim que os leitores atuais terminem, em vez de serem sempre ultrapassados por novos leitores.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-19",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "Which of the following statements about POSIX semaphores, according to the lecture, is strictly correct?",
+    "code": null,
+    "options": [
+      "They guarantee FIFO ordering of waiting processes",
+      "They ensure starvation-free execution by design",
+      "They provide mutual exclusion but no guarantees about scheduling fairness",
+      "They automatically prioritise writers over readers"
+    ],
+    "correctIndex": 2,
+    "explanation": "Os semáforos POSIX garantem as propriedades básicas de sincronização (contagem correta, atomicidade das operações wait/post, bloqueio de processos), mas a norma POSIX não exige nenhuma política específica de ordenação (como FIFO) para os processos bloqueados, nem garante ausência de starvation — isso depende da implementação do SO e de como o programador usa os semáforos.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-t-20",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo T)",
+    "topic": "sync",
+    "question": "In a FIFO-based readers–writers solution, under which condition can multiple readers proceed concurrently?",
+    "code": null,
+    "options": [
+      "Whenever no writer is currently active",
+      "When there are no writers waiting in the system",
+      "When all preceding requests in the queue are also readers",
+      "Only when the queue is empty"
+    ],
+    "correctIndex": 2,
+    "explanation": "Numa solução FIFO, os pedidos (de leitura ou escrita) são atendidos pela ordem de chegada, mas leitores consecutivos no início da fila podem ser agrupados e executar em conjunto, desde que não haja nenhum pedido de escrita à sua frente na fila a ser \"saltado\". Assim, vários leitores só progridem simultaneamente se todos os pedidos anteriores na fila também forem leituras, preservando a ordem justa de chegada.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-1",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "Why must a pipe used for communication between a parent and child process typically be created before the fork() call?",
+    "code": null,
+    "options": [
+      "Because the OS does not allow the creation of pipes after multiple processes exist",
+      "Because the child process inherits a copy of the parent's file descriptor table at fork()",
+      "Because file descriptors cannot be created by child processes",
+      "Because pipes require both processes to open the same file descriptor explicitly"
+    ],
+    "correctIndex": 1,
+    "explanation": "O pipe() é criado antes do fork() precisamente para que, quando o filho for criado, herde automaticamente uma cópia da tabela de descritores do pai — incluindo os dois extremos do pipe (leitura e escrita). Isto garante que ambos os processos partilham o mesmo pipe do kernel sem terem de o \"descobrir\" ou comunicar o seu identificador de outra forma.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-2",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "Consider a pipe shared by two processes where all write descriptors have been closed. What will occur when a process attempts to read from the pipe?",
+    "code": null,
+    "options": [
+      "The read operation blocks indefinitely until another process opens a write descriptor",
+      "The read operation fails with an error and sends a signal to the reader",
+      "The read operation returns 0, indicating end-of-file",
+      "The read operation returns the last value written before the descriptor was closed"
+    ],
+    "correctIndex": 2,
+    "explanation": "Quando todos os descritores de escrita de um pipe são fechados e o buffer já não tem dados por ler, uma read() subsequente devolve 0, sinalizando end-of-file. Não há erro nem sinal — é o mecanismo normal para o leitor detetar que já não há mais escritores nem dados a chegar.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-3",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "Which of the following correctly describes the atomicity guarantees of pipe writes?",
+    "code": null,
+    "options": [
+      "All write operations to a pipe are atomic regardless of size",
+      "Writes are atomic only when performed by a single process",
+      "Writes up to a system-defined limit (PIPE_BUF) are guaranteed to occur without interleaving with other writes",
+      "Writes are atomic only if the pipe buffer is empty"
+    ],
+    "correctIndex": 2,
+    "explanation": "O POSIX garante que escritas com tamanho até PIPE_BUF bytes são atómicas, ou seja, não ficam intercaladas com bytes de outra escrita concorrente ao mesmo pipe. Escritas maiores do que PIPE_BUF já não têm essa garantia e podem aparecer fragmentadas/intercaladas com dados de outros processos que escrevam ao mesmo tempo.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-4",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "Suppose a consumer process reads from a pipe but accidentally keeps the write descriptor open, even though it never writes to it. What is the most likely consequence when the pipe becomes empty?",
+    "code": null,
+    "options": [
+      "The read operation returns 0 immediately",
+      "The read operation fails with an error",
+      "The read operation blocks indefinitely waiting for more data",
+      "The pipe is automatically closed by the kernel"
+    ],
+    "correctIndex": 2,
+    "explanation": "O EOF só é sinalizado quando todos os descritores de escrita estão fechados. Se o próprio consumidor mantiver, por engano, o extremo de escrita aberto, o kernel continua a considerar que pode haver mais escritas futuras — mesmo que na prática nunca venham a acontecer — pelo que a leitura de um pipe vazio bloqueia indefinidamente à espera de dados que nunca chegam.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-5",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "In a system where multiple child processes write messages smaller than PIPE_BUF to the same pipe, which property is guaranteed?",
+    "code": null,
+    "options": [
+      "Messages will be received in the order of process creation",
+      "Messages will be received in the same order in which the writes were executed globally",
+      "Each individual message will appear in the pipe without being interleaved with bytes from other messages",
+      "The operating system schedules writes sequentially to preserve deterministic ordering"
+    ],
+    "correctIndex": 2,
+    "explanation": "A garantia de PIPE_BUF é de atomicidade por mensagem, não de ordenação global: cada escrita individual com tamanho até PIPE_BUF aparece de forma contígua e não fragmentada no pipe. No entanto, a ordem relativa entre mensagens de processos diferentes depende do escalonamento e não é garantida pelo sistema.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-6",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "Why must a process close the read end of the pipe before redirecting stdout to the pipe in a typical pipe-redirection pattern?",
+    "code": null,
+    "options": [
+      "Because dup2() requires all other descriptors to be closed beforehand",
+      "Because the process must ensure it does not accidentally read from the pipe it is writing to",
+      "Because leaving the read descriptor open would cause the other process on the other side of the pipe to receive an end-of-file immediately",
+      "Because exec() cannot be executed while both ends of a pipe are open"
+    ],
+    "correctIndex": 1,
+    "explanation": "Um pipe é unidirecional, mas o fork() faz com que o processo herde ambos os extremos (leitura e escrita). Se o processo que vai escrever para o pipe não fechar o seu próprio extremo de leitura antes de redirecionar stdout, corre o risco de manter, sem necessidade, uma referência que lhe permitiria ler acidentalmente do mesmo pipe onde está a escrever, criando ambiguidade e potenciais erros lógicos. Fechar o extremo de leitura não utilizado evita este problema.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-7",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "What is the main reason why a program that executes a new executable using an exec function cannot directly use variables containing pipe descriptors created before the call?",
+    "code": null,
+    "options": [
+      "Because file descriptors are closed automatically during exec()",
+      "Because the new program image replaces the previous process memory, including variables storing descriptor values",
+      "Because pipes cannot exist across program boundaries",
+      "Because exec() duplicates the descriptor table before loading the new program"
+    ],
+    "correctIndex": 1,
+    "explanation": "Os descritores de ficheiro em si sobrevivem ao exec() (salvo FD_CLOEXEC), mas toda a memória do processo — incluindo variáveis C que guardavam os números dos descritores — é substituída pela imagem do novo programa. Por isso, é necessário usar convenções fixas (como duplicar o descritor do pipe para stdin/stdout com dup2()) antes do exec(), já que o novo programa não tem acesso às variáveis originais.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-8",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "Consider the call to dup(fd). Which of the following statements correctly describes the behavior of this function?",
+    "code": null,
+    "options": [
+      "It creates a copy of the file contents referenced by fd",
+      "It returns a new descriptor pointing to the same resource as fd, using the lowest available descriptor number",
+      "It replaces the descriptor fd with a new one referring to a different resource",
+      "It duplicates the resource referenced by fd into a separate kernel buffer"
+    ],
+    "correctIndex": 1,
+    "explanation": "dup(fd) devolve um novo descritor de ficheiro que aponta para a mesma entrada na tabela de ficheiros abertos do kernel que fd (partilhando o offset e as flags de estado), usando o menor número de descritor disponível. Não copia o conteúdo do ficheiro nem cria buffers separados — é apenas mais uma referência ao mesmo recurso já aberto.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-9",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "What is the main functional difference between dup(fd) and dup2(fd1, fd2)?",
+    "code": null,
+    "options": [
+      "dup() duplicates file contents, while dup2() duplicates descriptors",
+      "dup() always duplicates descriptors to a fixed position, while dup2() chooses automatically",
+      "dup() allocates the lowest unused descriptor, whereas dup2() duplicates a descriptor into a specified descriptor number",
+      "dup() only works for pipes, while dup2() also works for files"
+    ],
+    "correctIndex": 2,
+    "explanation": "dup(fd) escolhe automaticamente o menor descritor livre para a duplicação, sem controlo por parte do programador sobre qual será. dup2(fd1, fd2) permite especificar exatamente o número de descritor destino (fd2), fechando-o primeiro se já estiver em uso — é esta capacidade de controlar o número final que a torna essencial em padrões de redireção como o de pipes (por exemplo, forçar o pipe para o descritor 0 ou 1).",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-10",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "pipes",
+    "question": "In a pipeline where Process 1 executes cat fx.txt and Process 2 executes sort, connected through a pipe, what must happen to the standard input of Process 2?",
+    "code": null,
+    "options": [
+      "It must be redirected to the write end of the pipe",
+      "It must remain connected to the terminal so sort can receive input",
+      "It must be redirected to the read end of the pipe using descriptor duplication",
+      "It must be closed so the pipe can transmit data correctly"
+    ],
+    "correctIndex": 2,
+    "explanation": "Para que sort leia os dados produzidos por cat através do pipe, o Processo 2 precisa de redirecionar o seu stdin (descritor 0) para o extremo de leitura do pipe, tipicamente usando dup2(read_end, 0). Só depois desta duplicação é que sort, sem qualquer alteração no seu código, passa a ler do pipe em vez do terminal.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-11",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "Which statement best explains why shared memory provides higher performance compared to mechanisms such as pipes?",
+    "code": null,
+    "options": [
+      "Because shared memory allows multiple processes to bypass virtual memory mechanisms",
+      "Because shared memory avoids kernel intervention during data access after the mapping is established",
+      "Because shared memory automatically synchronizes access between processes",
+      "Because shared memory stores data in CPU registers instead of main memory"
+    ],
+    "correctIndex": 1,
+    "explanation": "Depois de a memória partilhada estar mapeada (mmap), os processos acedem diretamente à mesma região de memória física através das suas próprias tabelas de páginas, sem necessidade de system calls por cada transferência de dados, ao contrário dos pipes (onde cada read/write envolve o kernel a copiar dados). Continua a usar memória virtual normalmente e não sincroniza automaticamente — a sincronização tem de ser feita explicitamente pelo programador.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-12",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "Which of the following sequences correctly describes the typical steps to create and use a POSIX shared memory object?",
+    "code": null,
+    "options": [
+      "mmap() → shm_open() → ftruncate()",
+      "shm_open() → mmap() → ftruncate()",
+      "shm_open() → ftruncate() → mmap()",
+      "ftruncate() → shm_open() → mmap()"
+    ],
+    "correctIndex": 2,
+    "explanation": "A sequência correta é: primeiro shm_open() cria/abre o objeto de memória partilhada e devolve um descritor; depois ftruncate() define o tamanho desse objeto (por omissão tem tamanho zero); só então mmap() pode mapear essa região, já com o tamanho definido, no espaço de endereçamento do processo. Mapear antes de definir o tamanho não faria sentido, pois o mmap() precisaria de saber quantos bytes mapear.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-13",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "Why is the volatile qualifier used in the shared variable new_data in a busy-wait synchronization example?",
+    "code": null,
+    "options": [
+      "To guarantee atomic updates to the variable across processes",
+      "To prevent the compiler from caching the variable in a register and ensure repeated memory reads",
+      "To enforce mutual exclusion when accessing the variable",
+      "To prevent race conditions between the writer and reader processes"
+    ],
+    "correctIndex": 1,
+    "explanation": "Sem volatile, o compilador pode assumir que uma variável não muda \"por fora\" do código local e otimizar o ciclo de espera guardando o valor lido num registo, nunca voltando a lê-la da memória. volatile obriga a que cada acesso à variável seja efetivamente feito em memória, permitindo que o processo veja as alterações feitas por outro processo através da memória partilhada. Não garante atomicidade nem exclusão mútua por si só.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-14",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "Which of the following statements about POSIX shared memory persistence is correct?",
+    "code": null,
+    "options": [
+      "The shared memory object is automatically deleted when all processes close it",
+      "The shared memory object is deleted when munmap() is called",
+      "The shared memory object persists until explicitly removed using shm_unlink()",
+      "The shared memory object exists only while at least one process is mapped to it"
+    ],
+    "correctIndex": 2,
+    "explanation": "Um objeto de memória partilhada POSIX comporta-se como um ficheiro num sistema de ficheiros tmpfs: persiste independentemente de os processos o fecharem ou desmapearem, até que alguém chame explicitamente shm_unlink() para remover o seu nome. Isto permite, por exemplo, que um processo crie a memória e outro a abra mais tarde, mesmo que o criador já tenha terminado.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-15",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "Which condition must be satisfied to ensure that changes made by one process to a shared memory region are visible to other processes?",
+    "code": null,
+    "options": [
+      "The mapping must use MAP_PRIVATE to isolate changes",
+      "The mapping must use MAP_SHARED so updates are propagated",
+      "The shared memory must be opened with O_RDONLY",
+      "The offset in mmap() must be non-zero"
+    ],
+    "correctIndex": 1,
+    "explanation": "MAP_SHARED garante que as alterações feitas por um processo na região mapeada são escritas de volta no objeto subjacente (ou memória física partilhada) e ficam visíveis a todos os outros processos que o mapeiam da mesma forma. MAP_PRIVATE, pelo contrário, cria uma cópia copy-on-write privada, onde as alterações não são partilhadas — o oposto do que se pretende para comunicação entre processos.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-16",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "Which statement precisely describes the effect of calling shm_unlink() on a shared memory object?",
+    "code": null,
+    "options": [
+      "It immediately deallocates the shared memory and invalidates all mappings",
+      "It removes the name, but the memory persists until all processes unmap and close it",
+      "It only marks the file descriptor as invalid for the calling process",
+      "It prevents any further munmap() calls on the object"
+    ],
+    "correctIndex": 1,
+    "explanation": "shm_unlink() comporta-se de forma análoga a unlink() num ficheiro normal: remove apenas o nome/referência do objeto do namespace, mas a memória subjacente continua válida enquanto existirem mapeamentos ativos (via mmap()) nalgum processo. Só quando todos os processos fizerem munmap() e/ou close() é que os recursos são efetivamente libertados pelo kernel.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-17",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "Consider the recommended cleanup sequence for POSIX shared memory. What is the primary reason for calling munmap() before close()?",
+    "code": null,
+    "options": [
+      "close() automatically performs munmap() if not called explicitly",
+      "munmap() requires a valid file descriptor to operate correctly",
+      "It ensures the process detaches from the memory region before releasing the descriptor",
+      "It guarantees that shm_unlink() will succeed"
+    ],
+    "correctIndex": 2,
+    "explanation": "munmap() é a operação responsável por desfazer o mapeamento da memória no espaço de endereçamento do processo; close() apenas fecha o descritor de ficheiro, sem afetar mapeamentos já estabelecidos. A ordem recomendada garante que o processo se desliga corretamente da região mapeada (munmap) antes de libertar a referência ao objeto (close), evitando deixar mapeamentos órfãos sem descritor associado.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-18",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "A process executes the following sequence. Which statement is correct regarding the shared memory after close(fd)?",
+    "code": "fd = shm_open(...);\nftruncate(fd, size);\naddr = mmap(...);\nclose(fd);",
+    "options": [
+      "The shared memory is deleted immediately",
+      "The mapping becomes invalid and cannot be accessed",
+      "The process can still access the mapped memory region via addr",
+      "Other processes can no longer open the shared memory"
+    ],
+    "correctIndex": 2,
+    "explanation": "Depois de mmap() estabelecer o mapeamento, o descritor de ficheiro fd deixa de ser necessário para aceder à memória — o acesso passa a ser feito diretamente via o ponteiro addr, gerido pela tabela de páginas do processo. Fechar fd com close() não invalida esse mapeamento nem afeta outros processos que tenham aberto o mesmo objeto; só munmap() (ou terminação do processo) desfaz o mapeamento.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-19",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "Why is shared memory generally faster than message-passing mechanisms such as pipes?",
+    "code": null,
+    "options": [
+      "It avoids context switches entirely",
+      "It allows direct memory access without per-transfer system calls",
+      "It eliminates the need for synchronization",
+      "It uses hardware-level locking mechanisms automatically"
+    ],
+    "correctIndex": 1,
+    "explanation": "Com pipes, cada transferência de dados exige uma system call (read/write) que envolve o kernel a copiar dados entre buffers. Com memória partilhada, uma vez feito o mapeamento, os processos leem e escrevem diretamente na memória, sem qualquer chamada ao kernel por cada acesso, o que reduz drasticamente o overhead para grandes volumes de dados ou comunicação frequente.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp2-tp-20",
+    "source": "SCOMP 25/26 — Checkpoint 2 (Grupo TP)",
+    "topic": "memory",
+    "question": "In the context of the fstat() function applied to a shared memory object, which of the following is a valid and typical use case?",
+    "code": null,
+    "options": [
+      "Synchronizing concurrent access between processes",
+      "Determining the size of a shared memory region created by another process",
+      "Mapping the shared memory into the process address space",
+      "Removing the shared memory object from the system"
+    ],
+    "correctIndex": 1,
+    "explanation": "fstat() aplicado ao descritor devolvido por shm_open() permite consultar metadados do objeto, nomeadamente o seu tamanho atual (st_size). Isto é útil quando um processo abre uma memória partilhada criada por outro e precisa de saber o tamanho antes de a mapear com mmap(), já que fstat() não sincroniza acessos, não mapeia memória nem remove o objeto.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-1",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "Which of the following statements about threads within a process is strictly correct?",
+    "code": null,
+    "options": [
+      "Each thread maintains its own virtual address space and kernel context",
+      "Threads share the same address space but maintain separate kernel contexts",
+      "Threads share code, heap, global data, and kernel context, but each has its own stack and CPU state",
+      "Threads share only code and read-only data, but not heap or global variables"
+    ],
+    "correctIndex": 2,
+    "explanation": "As threads de um mesmo processo partilham o essencial dos recursos do processo — código, heap, dados globais e o mesmo contexto de processo ao nível do kernel (como a tabela de páginas) — mas cada uma mantém a sua própria stack e o seu próprio estado de CPU (registos, program counter), o que lhes permite executar de forma independente. Não têm espaços de endereçamento separados como acontece entre processos distintos.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-2",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "According to the thread memory model described in lectures, which statement is true?",
+    "code": null,
+    "options": [
+      "Stack variables are always private and cannot be accessed by other threads",
+      "Heap variables are duplicated per thread unless explicitly shared",
+      "Any thread can potentially access another thread's stack, despite conceptual separation",
+      "Global variables are replicated per thread to avoid synchronization issues"
+    ],
+    "correctIndex": 2,
+    "explanation": "Embora, conceptualmente, cada thread tenha a sua própria stack para variáveis locais, todas as stacks residem no mesmo espaço de endereçamento partilhado do processo. Isso significa que, se um endereço de uma variável local for passado a outra thread (por exemplo, através de um ponteiro), essa outra thread pode efetivamente aceder-lhe — a separação de stacks é uma convenção de uso, não uma barreira de proteção de hardware.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-3",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "A variable x in a multithreaded C program is considered shared if:",
+    "code": null,
+    "options": [
+      "It is stored in a memory region accessible by all threads",
+      "It is only accessed simultaneously by multiple threads during execution",
+      "At least one instance of x is referenced by more than one thread, regardless of how it is allocated",
+      "Its address is passed to another thread through a function argument"
+    ],
+    "correctIndex": 2,
+    "explanation": "A definição relevante de \"variável partilhada\" não depende do tipo de alocação (heap, global, stack) nem da forma como a referência chegou à outra thread, mas apenas do facto concreto de que aquela instância específica é referenciada por mais do que uma thread. Isto inclui, por exemplo, uma variável local cujo endereço tenha sido passado a outra thread, mesmo que originalmente estivesse na stack.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-4",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "Which statement best captures the most accurate conceptual criterion for determining whether a variable may cause concurrency issues?",
+    "code": null,
+    "options": [
+      "Variables allocated on the heap are inherently unsafe, while stack variables are safe",
+      "Variables are unsafe only if explicitly declared as global or static",
+      "Concurrency issues arise when multiple threads can access the same memory location through aliasing, regardless of where the variable is allocated",
+      "Only variables modified by more than one thread can lead to concurrency issues"
+    ],
+    "correctIndex": 2,
+    "explanation": "O critério correto não é a categoria de alocação (heap, stack, global), mas sim se existe aliasing — isto é, se múltiplas threads conseguem, por qualquer via, aceder ao mesmo endereço de memória. Mesmo uma variável só de leitura por múltiplas threads pode participar em problemas de concorrência mais subtis (como reordenações), pelo que restringir o problema a \"apenas variáveis modificadas\" também é impreciso.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-5",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "Which of the following statements correctly distinguishes thread-safe from reentrant functions?",
+    "code": null,
+    "options": [
+      "Thread-safe functions cannot use locks, while reentrant functions may",
+      "Reentrant functions may rely on shared global state if protected by locks",
+      "A thread-safe function may use synchronization mechanisms and still not be reentrant",
+      "All thread-safe functions are inherently reentrant"
+    ],
+    "correctIndex": 2,
+    "explanation": "Uma função é thread-safe se pode ser chamada em simultâneo por várias threads sem produzir resultados incorretos, possivelmente usando locks para o garantir. Reentrância é uma propriedade mais forte: a função tem de poder ser interrompida a meio (por exemplo por um sinal) e chamada de novo antes de terminar, sem estado partilhado nem locks (que poderiam causar deadlock consigo própria). Assim, uma função pode ser thread-safe (graças a locks) mas não reentrante, precisamente por causa desses locks.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-6",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "Which statement most accurately distinguishes cache coherence from memory consistency?",
+    "code": null,
+    "options": [
+      "Cache coherence guarantees global ordering of all memory operations, while memory consistency ensures each core has private cached copies",
+      "Cache coherence concerns visibility and ordering for a single memory location, while memory consistency defines ordering across multiple memory locations",
+      "Cache coherence prevents compiler reordering, while memory consistency prevents hardware reordering",
+      "Cache coherence is sufficient to guarantee sequential consistency"
+    ],
+    "correctIndex": 1,
+    "explanation": "A coerência de cache garante que todos os processadores acabam por ver o mesmo valor mais recente para uma dada posição de memória (visibilidade e ordenação relativa a essa única posição). A consistência de memória vai mais além, definindo regras sobre a ordem relativa observável de operações sobre múltiplas posições de memória diferentes entre threads — coerência por si só não garante essa ordenação mais ampla.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-7",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "Under sequential consistency, which condition must always hold?",
+    "code": null,
+    "options": [
+      "All threads execute at the same speed and complete in lockstep",
+      "Each thread may reorder operations freely as long as cache coherence is preserved",
+      "All operations appear in a single global order that preserves the program order of each individual thread",
+      "Writes become instantly visible to all processors"
+    ],
+    "correctIndex": 2,
+    "explanation": "A consistência sequencial exige que exista uma ordem total global das operações de memória de todas as threads, compatível com a ordem de programa de cada thread individual (isto é, cada thread vê as suas próprias operações na ordem em que as escreveu, e todos concordam nessa mesma ordem entrelaçada). Não exige velocidade igual entre threads nem visibilidade instantânea, apenas consistência lógica na ordenação observada.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-8",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "Why do modern architectures adopt relaxed consistency models?",
+    "code": null,
+    "options": [
+      "To eliminate the need for synchronization primitives",
+      "To maximize correctness by enforcing stricter ordering",
+      "To improve performance by allowing optimizations such as reordering and write buffering",
+      "To guarantee FIFO ordering of inter-thread communication"
+    ],
+    "correctIndex": 2,
+    "explanation": "Modelos de consistência relaxados permitem ao hardware (e compilador) reordenar acessos à memória, usar write buffers e outras otimizações de desempenho, desde que a ordem correta seja restabelecida quando necessário através de barreiras de memória explícitas. Isto melhora significativamente o desempenho face à consistência sequencial estrita, mas exige que o programador use primitivas de sincronização corretamente, não as elimina.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-9",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "Why is volatile insufficient for correct shared-variable synchronization in multithreaded programs?",
+    "code": null,
+    "options": [
+      "It prevents all compiler and hardware reordering but not cache invalidation",
+      "It guarantees visibility but not atomicity, ordering, or mutual exclusion",
+      "It only works for global variables, not heap variables",
+      "It automatically serializes writes but not reads"
+    ],
+    "correctIndex": 1,
+    "explanation": "volatile apenas impede o compilador de guardar a variável num registo, forçando leituras/escritas reais em memória — isso ajuda com visibilidade em cenários simples, mas não garante que uma operação como counter++ seja atómica, nem impõe qualquer ordenação relativa a outras variáveis, nem oferece exclusão mútua. Para essas garantias são necessários mutexes, semáforos ou operações atómicas dedicadas.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-10",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "threads",
+    "question": "Which statement best explains false sharing?",
+    "code": null,
+    "options": [
+      "Multiple threads update the same variable simultaneously without locks",
+      "Threads use separate variables, but those variables occupy the same cache line, causing unnecessary coherence traffic",
+      "A thread reads stale data because cache coherence is disabled",
+      "Multiple threads share registers within the same core"
+    ],
+    "correctIndex": 1,
+    "explanation": "False sharing acontece quando duas threads acedem a variáveis logicamente independentes que, por coincidência de layout em memória, caem na mesma linha de cache. O protocolo de coerência de cache trata a linha inteira como uma unidade, pelo que escritas de uma thread invalidam a cópia da outra mesmo sem haver conflito real de dados, gerando tráfego de coerência desnecessário e degradando o desempenho.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-11",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "Which statement most accurately distinguishes the scheduler from the dispatcher?",
+    "code": null,
+    "options": [
+      "The scheduler performs context switches, while the dispatcher manages wait queues",
+      "The scheduler selects which runnable process should execute next, while the dispatcher performs the context switch and transfers CPU control",
+      "The scheduler handles interrupts, while the dispatcher determines process priority",
+      "The scheduler and dispatcher are functionally identical components with different names"
+    ],
+    "correctIndex": 1,
+    "explanation": "Tal como visto no Checkpoint 1, o scheduler é responsável pela decisão de política — qual processo pronto deve correr a seguir — enquanto o dispatcher é o mecanismo que efetivamente realiza a troca de contexto e entrega o CPU a esse processo. Não são funcionalmente idênticos nem trocam estas responsabilidades entre si.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-12",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "Under which condition must the operating system always make a scheduling decision without requiring preemption?",
+    "code": null,
+    "options": [
+      "Running → Ready due to time slice expiration",
+      "Waiting → Ready after I/O completion",
+      "Running → Waiting because the process blocks",
+      "Ready → Running after a priority boost"
+    ],
+    "correctIndex": 2,
+    "explanation": "Quando um processo em execução bloqueia voluntariamente (por exemplo, para esperar por I/O), o CPU fica imediatamente livre e o SO tem de escolher outro processo para correr — esta decisão de escalonamento é obrigatória e não depende de qualquer mecanismo de preempção, porque o próprio processo cedeu o CPU. As restantes transições (expiração de quantum, chegada de I/O, boost de prioridade) tipicamente envolvem preempção de um processo já em execução.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-13",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "Why can FIFO scheduling produce poor responsiveness for I/O-bound processes?",
+    "code": null,
+    "options": [
+      "FIFO forcibly preempts I/O-bound processes before they complete",
+      "I/O-bound processes are permanently assigned lower priority",
+      "After completing I/O, I/O-bound processes re-enter the ready queue behind long CPU-bound processes, increasing delay",
+      "FIFO ignores process arrival order whenever I/O occurs"
+    ],
+    "correctIndex": 2,
+    "explanation": "Em FIFO, quando um processo I/O-bound termina uma operação de I/O e volta à fila de prontos, entra no fim dessa fila, atrás de processos CPU-bound longos que já lá estavam. Isto obriga-o a esperar bastante tempo antes de voltar a correr por breves instantes até ao próximo pedido de I/O, um padrão que degrada muito a responsividade — o clássico \"efeito comboio\" (convoy effect).",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-14",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "What is the primary consequence of choosing an excessively small time quantum in Round-Robin scheduling?",
+    "code": null,
+    "options": [
+      "Increased starvation risk for low-priority processes",
+      "Reduced responsiveness for interactive tasks",
+      "Higher context-switch overhead, reducing effective CPU efficiency",
+      "Behavior becomes equivalent to FIFO scheduling"
+    ],
+    "correctIndex": 2,
+    "explanation": "Um quantum muito pequeno obriga a trocas de contexto muito frequentes; como cada troca tem um custo fixo (guardar/restaurar estado, invalidar caches, etc.), uma fração cada vez maior do tempo de CPU é gasta em overhead administrativo em vez de trabalho útil dos processos, reduzindo a eficiência efetiva do sistema.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-15",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "Why is Round-Robin not always superior to FIFO, even assuming zero-cost context switching?",
+    "code": null,
+    "options": [
+      "Round-Robin can increase average turnaround time when jobs have similar execution lengths due to forced time slicing",
+      "FIFO guarantees lower waiting time for all workloads",
+      "Round-Robin cannot support CPU-bound workloads",
+      "FIFO always prevents convoy effects"
+    ],
+    "correctIndex": 0,
+    "explanation": "Mesmo sem custo de troca de contexto, o Round-Robin fatia o tempo de CPU entre todos os processos, o que atrasa a conclusão de cada um individualmente quando as suas durações são semelhantes — em FIFO, cada processo corre até ao fim sem interrupções, terminando mais cedo em média nesse cenário específico. Assim, RR não é universalmente melhor; depende do perfil das tarefas.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-16",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "Why is Shortest Job First (SJF) considered theoretically optimal yet problematic in real systems?",
+    "code": null,
+    "options": [
+      "It always prevents starvation but requires excessive context switching",
+      "It minimizes average turnaround time when burst times are known, but exact future execution times are rarely available",
+      "It guarantees fairness for all processes but performs poorly for interactive workloads",
+      "It only works in preemptive environments"
+    ],
+    "correctIndex": 1,
+    "explanation": "Pode ser demonstrado matematicamente que SJF minimiza o tempo médio de turnaround quando os tempos de burst de CPU são conhecidos antecipadamente. O problema é prático: na realidade não se sabe com exatidão quanto tempo de CPU um processo vai precisar antes de o executar, obrigando a estimativas (por exemplo, médias exponenciais), o que limita a aplicabilidade direta do algoritmo ideal.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-17",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "What is the defining advantage of Shortest Remaining Time First (SRTF) over standard SJF?",
+    "code": null,
+    "options": [
+      "It eliminates starvation for long jobs",
+      "It avoids all context-switch overhead through burst prediction",
+      "It dynamically preempts running processes when shorter jobs arrive, often reducing average waiting time further",
+      "It guarantees FIFO ordering among equal-priority tasks"
+    ],
+    "correctIndex": 2,
+    "explanation": "SRTF é a versão preemptiva do SJF: se chegar um novo processo com um tempo de execução restante menor do que o tempo restante do processo atualmente em execução, o SO preempta imediatamente este último para dar lugar ao mais curto. Isto pode reduzir ainda mais o tempo médio de espera face ao SJF não-preemptivo, à custa de mais trocas de contexto e do risco de starvation para jobs longos.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-18",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "What is the key conceptual advantage of a multilevel feedback queue over a fixed multilevel queue?",
+    "code": null,
+    "options": [
+      "It permanently separates system, batch, and interactive jobs to improve predictability",
+      "It allows processes to move between queues based on observed behavior, adapting to changing CPU-burst patterns",
+      "It guarantees no starvation without additional mechanisms",
+      "It removes the need for Round-Robin scheduling"
+    ],
+    "correctIndex": 1,
+    "explanation": "Ao contrário de uma fila multinível fixa (onde um processo permanece sempre na mesma fila), a fila multinível com feedback permite que um processo mude de fila com base no seu comportamento observado — por exemplo, um processo que use muito CPU desce para uma fila de menor prioridade, e um processo interativo que bloqueie frequentemente sobe. Isto adapta dinamicamente a política aos padrões reais de cada processo, sem eliminar necessidades de mecanismos anti-starvation como o aging.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-19",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "How does aging primarily address starvation in priority-based systems?",
+    "code": null,
+    "options": [
+      "By reducing context-switch frequency for low-priority processes",
+      "By gradually increasing the priority of waiting processes over time",
+      "By forcing all queues to use identical scheduling policies",
+      "By preventing preemption entirely"
+    ],
+    "correctIndex": 1,
+    "explanation": "Aging é a técnica de aumentar gradualmente a prioridade de um processo à medida que ele espera na fila de prontos, garantindo que, mais cedo ou mais tarde, mesmo um processo de baixa prioridade acaba por ter prioridade suficiente para ser escalonado. Isto resolve diretamente o problema de starvation em sistemas baseados em prioridades estritas, sem alterar a política de escalonamento das restantes filas.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-t-20",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo T)",
+    "topic": "scheduling",
+    "question": "Which scenario best defines priority inversion?",
+    "code": null,
+    "options": [
+      "A high-priority process voluntarily yields to another high-priority process",
+      "A low-priority process is delayed because a high-priority process monopolizes the CPU",
+      "A high-priority process is indirectly blocked because a low-priority process holds a needed resource while medium-priority processes continue executing",
+      "A scheduler accidentally assigns incorrect static priorities"
+    ],
+    "correctIndex": 2,
+    "explanation": "Inversão de prioridade ocorre quando um processo de alta prioridade precisa de um recurso (por exemplo, um lock) detido por um processo de baixa prioridade; este último não consegue correr porque processos de prioridade média o vão preemptando continuamente, atrasando indiretamente o processo de alta prioridade que fica bloqueado à espera do recurso. É um efeito indireto e contraintuitivo da combinação entre escalonamento por prioridades e recursos partilhados.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-1",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "Which condition is necessary and sufficient for a race condition to occur?",
+    "code": null,
+    "options": [
+      "Two or more processes access the same variable simultaneously",
+      "Two or more processes access a shared resource, and at least one performs a write, with no enforced execution order",
+      "Multiple processes execute concurrently on different CPU cores",
+      "A shared variable is accessed without using semaphores"
+    ],
+    "correctIndex": 1,
+    "explanation": "Uma race condition surge sempre que dois ou mais processos/threads acedem a um recurso partilhado, pelo menos um desses acessos é uma escrita, e não existe nenhuma ordem imposta entre eles — o resultado final depende então do escalonamento. Apenas ler concorrentemente (sem escritas) não gera race condition; e executar em múltiplos cores nem sequer é necessário (pode acontecer com concorrência num único core).",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-2",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "Which statement about POSIX semaphores is strictly correct?",
+    "code": null,
+    "options": [
+      "The semaphore value may become negative to represent the number of blocked processes",
+      "A process calling sem_wait() always decrements the semaphore immediately",
+      "Semaphore operations must be atomic to prevent observation of intermediate states",
+      "sem_post() may block if there are no waiting processes"
+    ],
+    "correctIndex": 2,
+    "explanation": "As operações sem_wait() e sem_post() têm de ser atómicas — implementadas com suporte do kernel/hardware — para que nenhum processo consiga observar um estado intermédio (por exemplo, a meio da verificação e decremento do valor). O valor do semáforo POSIX nunca fica negativo (é sempre ≥ 0); sem_wait() só decrementa se o valor for positivo, bloqueando caso contrário; e sem_post() nunca bloqueia, apenas incrementa e eventualmente acorda um processo à espera.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-3",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "What is the most accurate interpretation of a semaphore initialized with value 0?",
+    "code": null,
+    "options": [
+      "It allows exactly zero processes to enter the critical section permanently",
+      "It behaves like a mutex but with stricter exclusion guarantees",
+      "It enforces event synchronization, where processes wait until another process enables their progress",
+      "It allows unlimited concurrent access until explicitly decremented"
+    ],
+    "correctIndex": 2,
+    "explanation": "Um semáforo inicializado a 0 não representa exclusão mútua (isso seria um semáforo binário a 1) mas sim sincronização de eventos: qualquer processo que chame sem_wait() fica bloqueado até que outro processo execute sem_post(), sinalizando que o evento esperado ocorreu. É o padrão típico para, por exemplo, um consumidor esperar que o produtor produza o primeiro item.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-4",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "Which statement best explains why semaphores prevent race conditions in shared-memory systems?",
+    "code": null,
+    "options": [
+      "They ensure that all processes execute in a predefined order",
+      "They eliminate concurrency by forcing sequential execution of all processes",
+      "They enforce constraints on access ordering to shared resources through atomic operations and blocking",
+      "They guarantee fairness by serving waiting processes in FIFO order"
+    ],
+    "correctIndex": 2,
+    "explanation": "Os semáforos previnem race conditions porque as suas operações (wait/post) são atómicas e permitem bloquear processos até que determinadas condições de acesso sejam satisfeitas, impondo restrições de ordenação e exclusão sobre o acesso a recursos partilhados. Não forçam uma ordem de execução total predefinida nem serialização de todos os processos — apenas coordenam o acesso ao recurso protegido — e o POSIX não garante ordem FIFO.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-5",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "Which of the following statements about POSIX semaphore functions is correct?",
+    "code": null,
+    "options": [
+      "sem_getvalue() can be reliably used to decide whether to call sem_wait()",
+      "sem_trywait() blocks until the semaphore becomes available",
+      "A semaphore is destroyed immediately after sem_unlink() is called",
+      "A semaphore is only fully destroyed after being unlinked and all processes have closed it"
+    ],
+    "correctIndex": 3,
+    "explanation": "À semelhança de shm_unlink() para memória partilhada, sem_unlink() remove apenas o nome do semáforo nomeado, mas os seus recursos só são efetivamente libertados depois de todos os processos que o têm aberto o fecharem. sem_getvalue() não deve ser usado para decidir chamar sem_wait() porque o valor pode mudar entre a leitura e a chamada (não é atómico como par de operações); e sem_trywait() nunca bloqueia — falha imediatamente se o semáforo não estiver disponível.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-6",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "Why are semaphores considered more general than mutexes?",
+    "code": null,
+    "options": [
+      "They guarantee FIFO ordering of waiting processes",
+      "They can enforce both mutual exclusion and coordination constraints such as ordering and event dependencies",
+      "They eliminate the need for shared memory",
+      "They prevent all types of race conditions automatically"
+    ],
+    "correctIndex": 1,
+    "explanation": "Um mutex serve apenas para exclusão mútua binária (bloqueado/desbloqueado, com noção de dono). Um semáforo, ao permitir valores inteiros arbitrários e não ter noção obrigatória de \"dono\", pode ser usado tanto para exclusão mútua (semáforo binário) como para sincronização de eventos e coordenação entre processos (por exemplo, contagem de recursos disponíveis, produtor-consumidor), tornando-o um mecanismo mais geral.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-7",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "Which statement best characterizes the use of semaphores for event synchronization?",
+    "code": null,
+    "options": [
+      "They prevent concurrent access to shared variables",
+      "They ensure that all processes execute in parallel without blocking",
+      "They allow processes to wait until another process enables their progress by performing a corresponding operation",
+      "They guarantee that processes execute in a predefined deterministic order"
+    ],
+    "correctIndex": 2,
+    "explanation": "Na sincronização de eventos, um semáforo (tipicamente inicializado a 0) é usado para que um processo bloqueie em sem_wait() até que outro processo, ao concluir alguma tarefa, execute sem_post() e liberte o primeiro para continuar. É uma forma de coordenação de progresso entre processos, distinta da exclusão mútua de acesso a variáveis.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-8",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "Why is the following pattern incorrect in concurrent programs?",
+    "code": "if (tickets > 0) {\n    sem_wait(sem);\n    tickets--;\n    sem_post(sem);\n}",
+    "options": [
+      "Because semaphores cannot protect integer variables",
+      "Because the decrement operation is not atomic",
+      "Because the condition check and the action are not performed atomically, allowing the state to change between them",
+      "Because sem_wait() should always be called after modifying shared data"
+    ],
+    "correctIndex": 2,
+    "explanation": "O problema é do tipo check-then-act: a condição if (tickets > 0) é avaliada fora da secção protegida pelo semáforo, pelo que entre essa verificação e a aquisição efetiva do lock, outra thread pode alterar tickets (por exemplo, levá-lo a 0). O sem_wait()/sem_post() protege corretamente o decremento em si, mas não protege a decisão de entrar no bloco, o que pode levar tickets a ficar negativo ou a comportamento inconsistente.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-9",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "What is the essential property enforced by a barrier synchronization?",
+    "code": null,
+    "options": [
+      "Only one process can execute a critical section at a time",
+      "All processes must reach a certain point before any of them can proceed",
+      "Processes execute in strict sequential order based on arrival time",
+      "Shared variables are updated atomically across all processes"
+    ],
+    "correctIndex": 1,
+    "explanation": "Uma barreira sincroniza um grupo de processos/threads para que nenhum deles ultrapasse um determinado ponto de execução até que todos os outros também o tenham alcançado. Só depois de o último processo chegar à barreira é que todos são libertados para continuar, ao contrário da exclusão mútua (que limita concorrência dentro de uma secção) ou de uma ordem sequencial estrita.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-10",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "sync",
+    "question": "In the provided barrier implementation in the TP class, why does each process call sem_post(sem_barrier) after passing the barrier?",
+    "code": null,
+    "options": [
+      "To reset the semaphore value to zero for future reuse",
+      "To allow the next waiting process to proceed, effectively releasing all processes one by one",
+      "To ensure mutual exclusion when updating shared variables",
+      "To guarantee FIFO ordering among waiting processes"
+    ],
+    "correctIndex": 1,
+    "explanation": "Na implementação da barreira, o último processo a chegar liberta os restantes fazendo múltiplos sem_post() (ou um número igual ao de processos à espera); cada processo libertado, ao passar a barreira, propaga esse desbloqueio fazendo mais um sem_post(), criando um efeito em cascata que acorda todos os processos bloqueados um a um, sem depender de resetar manualmente o semáforo nem de garantir ordem FIFO.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-11",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "Which statement most accurately describes resource ownership in a multithreaded process?",
+    "code": null,
+    "options": [
+      "Each thread has its own heap and global variables, but shares registers and stack",
+      "Threads share code, heap, global data, and process resources, while each thread maintains its own stack and CPU execution state",
+      "Threads share only code and read-only memory, while all writable memory is private",
+      "Each thread is an independent execution unit with a separate virtual address space"
+    ],
+    "correctIndex": 1,
+    "explanation": "As threads dentro do mesmo processo partilham o código, heap, variáveis globais e todos os recursos ao nível do processo (descritores de ficheiro, sinais, etc.), mas cada uma mantém a sua própria stack e estado de CPU (registos, program counter), permitindo execução independente dentro do mesmo espaço de endereçamento — ao contrário de processos, que têm espaços de endereçamento totalmente separados.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-12",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "What happens if the main() function reaches its end, immediately after creating worker threads, without calling pthread_join() or pthread_exit()?",
+    "code": null,
+    "options": [
+      "Only the main thread terminates; the process remains alive until all worker threads finish",
+      "Worker threads are automatically detached and continue independently",
+      "The entire process terminates, causing all threads to terminate, even if some have not yet executed",
+      "The scheduler guarantees all created threads execute at least once before process termination"
+    ],
+    "correctIndex": 2,
+    "explanation": "Quando a função main() retorna (equivalente a chamar exit() implicitamente), todo o processo termina, o que leva ao término imediato de todas as suas threads, independentemente de terem ou não terminado o seu trabalho. Para evitar isto, é necessário chamar pthread_join() nas threads criadas ou usar pthread_exit() no main, que termina apenas a thread principal e mantém o processo vivo até todas as outras threads acabarem.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-13",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "Why is passing &i from a loop variable directly to multiple threads often incorrect?",
+    "code": null,
+    "options": [
+      "pthread_create() copies only part of the integer value",
+      "All threads may observe the same memory location after its value has changed, producing nondeterministic results",
+      "Stack variables cannot be referenced by threads",
+      "Thread arguments must always be heap-allocated"
+    ],
+    "correctIndex": 1,
+    "explanation": "Se todas as threads receberem o endereço da mesma variável de ciclo i (em vez de uma cópia do seu valor), e o ciclo continuar a incrementar i antes de as threads terem lido o valor, várias threads podem acabar por ler o mesmo valor final de i (ou valores inesperados), em vez do valor que tinha na iteração em que foram criadas — um erro clássico de partilha acidental de variável.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-14",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "Why is write() often preferred over printf() in simple concurrent thread examples?",
+    "code": null,
+    "options": [
+      "write() automatically synchronizes all threads globally",
+      "printf() cannot be used inside threads",
+      "Small write() calls are atomic under POSIX constraints, reducing output interleaving risk",
+      "write() is always faster than printf()"
+    ],
+    "correctIndex": 2,
+    "explanation": "Chamadas write() de pequena dimensão (até PIPE_BUF, tipicamente, para pipes, mas o princípio de atomicidade de escritas pequenas aplica-se de forma semelhante a outros descritores) tendem a não ficar intercaladas entre si, reduzindo o risco de outputs misturados entre threads. printf() pode ser usado dentro de threads, mas usa buffers internos da biblioteca que podem produzir output intercalado ou requerem sincronização adicional para ficar organizado.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-15",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "Which approach is correct for safely returning complex data from a thread to pthread_join()?",
+    "code": null,
+    "options": [
+      "Return the address of a local stack variable created inside the thread",
+      "Cast an integer directly to void* for portability",
+      "Allocate the return structure dynamically (e.g., with malloc) and free it after pthread_join()",
+      "Use a local static variable inside the thread for all threads simultaneously"
+    ],
+    "correctIndex": 2,
+    "explanation": "Devolver o endereço de uma variável local da thread é inseguro, porque essa stack deixa de existir (ou é reutilizada) assim que a thread termina, tornando o ponteiro inválido (dangling pointer). A abordagem correta é alocar a estrutura dinamicamente com malloc() dentro da thread, devolver esse ponteiro via pthread_exit()/return, e libertá-lo depois no lado que chama pthread_join(), evitando também os problemas de partilha de uma variável static entre todas as threads.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-16",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "Which statement most accurately distinguishes a POSIX mutex from a semaphore?",
+    "code": null,
+    "options": [
+      "A mutex can be unlocked by any thread, while a semaphore can only be incremented by its owner",
+      "A mutex enforces ownership, meaning only the thread that locked it may unlock it",
+      "A semaphore always guarantees mutual exclusion, while a mutex does not",
+      "Mutexes are primarily used for event synchronization, while semaphores are only for data protection"
+    ],
+    "correctIndex": 1,
+    "explanation": "Um mutex tem noção de posse (ownership): apenas a thread que o bloqueou (lock) pode desbloqueá-lo (unlock), o que faz sentido para o seu propósito específico de exclusão mútua. Um semáforo não tem essa noção de dono — qualquer thread pode chamar sem_post(), o que o torna adequado também para sincronização de eventos entre threads diferentes, não apenas para proteção de dados.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-17",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "Why does protecting an increment to a shared global variable counter with a mutex ensures correctness in a multi-threaded application?",
+    "code": null,
+    "options": [
+      "Because the mutex makes counter++ a single CPU instruction",
+      "Because it guarantees that only one thread executes the read-modify-write sequence at a time",
+      "Because it prevents compiler optimizations on counter",
+      "Because it duplicates the shared variable for each thread"
+    ],
+    "correctIndex": 1,
+    "explanation": "counter++ não é uma operação atómica ao nível do hardware (envolve ler, incrementar e escrever de volta); o mutex garante que, enquanto uma thread está a executar essa sequência completa dentro da secção crítica, nenhuma outra thread pode entrar e interferir, eliminando a possibilidade de uma escrita perdida. O mutex não transforma a instrução em atómica ao nível do CPU nem duplica a variável — apenas serializa o acesso.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-18",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "What is the most accurate behavior of pthread_cond_wait()?",
+    "code": null,
+    "options": [
+      "It blocks while continuously holding the mutex to preserve exclusivity",
+      "It releases the mutex atomically when blocking and reacquires it before returning",
+      "It signals another waiting thread before blocking",
+      "It guarantees the condition is true when it returns"
+    ],
+    "correctIndex": 1,
+    "explanation": "pthread_cond_wait() liberta atomicamente o mutex associado no momento em que bloqueia a thread (permitindo que outras threads entrem na secção crítica e possam alterar o estado partilhado), e volta a adquirir esse mesmo mutex antes de retornar ao chamador. Não mantém o mutex bloqueado durante a espera, nem sinaliza outra thread, nem garante por si só que a condição é verdadeira ao retornar (pode haver wakeups espúrios).",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-19",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "Why must condition variables always be paired with a mutex protecting the shared condition?",
+    "code": null,
+    "options": [
+      "Because condition variables cannot block without mutex ownership",
+      "Because mutexes ensure FIFO wakeup ordering",
+      "Because the mutex makes checking the condition and entering the wait state effectively coordinated, preventing missed state changes",
+      "Because pthread_cond_signal() requires the waiting thread to hold the mutex"
+    ],
+    "correctIndex": 2,
+    "explanation": "O mutex assegura que a verificação da condição e a entrada em estado de espera (dentro de pthread_cond_wait()) acontecem de forma coordenada e sem interrupção por outra thread: se não houvesse essa coordenação, outra thread poderia alterar a condição e sinalizar entre o momento em que se verifica a condição e o momento em que se começa efetivamente a esperar, perdendo-se essa sinalização (lost wakeup). Não se trata de garantir ordem FIFO nem de uma exigência técnica arbitrária de posse do mutex por quem sinaliza.",
+    "timesSeen": 0,
+    "theoryRefs": []
+  },
+  {
+    "id": "cp3-tp-20",
+    "source": "SCOMP 25/26 — Checkpoint 3 (Grupo TP)",
+    "topic": "threads",
+    "question": "Why is while(condition) required around pthread_cond_wait() instead of if(condition)?",
+    "code": null,
+    "options": [
+      "Because pthread_cond_wait() may return only after a broadcast",
+      "Because the waiting thread may wake spuriously or the shared state may change before it reacquires the mutex",
+      "Because if statements are not thread-safe in POSIX",
+      "Because while guarantees fairness among waiting threads"
+    ],
+    "correctIndex": 1,
+    "explanation": "pthread_cond_wait() pode retornar mesmo sem que a condição desejada se tenha tornado verdadeira — devido a wakeups espúrios permitidos pelo standard, ou porque outra thread já consumiu/alterou o estado partilhado entre o sinal e a reaquisição do mutex por esta thread. Por isso, é necessário reverificar a condição num ciclo while após o retorno de pthread_cond_wait(), voltando a esperar se ela ainda não se verificar, em vez de assumir com um simples if que passou a ser verdadeira.",
+    "timesSeen": 0,
+    "theoryRefs": []
   }
 ]

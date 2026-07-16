@@ -687,5 +687,145 @@
         "label": "Sincronização de processos I"
       }
     ]
+  },
+  {
+    "id": "fc-cp-01",
+    "topic": "processes",
+    "front": "O que é uma instrução trap e porque é essencial para a mudança entre user mode e kernel mode?",
+    "back": "É uma instrução que transfere de forma controlada a execução do modo utilizador para o modo kernel (dual-mode), permitindo que o SO forneça serviços privilegiados em segurança sem deixar o utilizador executar diretamente instruções protegidas. É a base de qualquer system call.\n🧠 Trap = a porta trancada que só o kernel pode abrir.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-02",
+    "topic": "processes",
+    "front": "Qual a diferença entre scheduler e dispatcher?",
+    "back": "O scheduler é a política: escolhe qual processo pronto deve correr a seguir, segundo o algoritmo de escalonamento. O dispatcher é o mecanismo: executa fisicamente a troca de contexto (guardar/restaurar registos, PC, tabela de páginas) e entrega o CPU ao processo escolhido.\n🧠 Scheduler decide, dispatcher despacha.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-03",
+    "topic": "processes",
+    "front": "Como funciona fork() e o que é copy-on-write (COW)?",
+    "back": "fork() é chamado uma vez mas retorna duas vezes: PID do filho no pai, 0 no filho. Com COW, pai e filho inicialmente partilham as mesmas páginas físicas (só-leitura); só quando um deles escreve é que essa página é efetivamente copiada, poupando tempo e memória — especialmente útil quando se segue um exec().\n🧠 fork() copia depressa porque não copia nada até ser preciso.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-04",
+    "topic": "processes",
+    "front": "O que acontece à memória e aos descritores de ficheiro num exec()?",
+    "back": "exec() substitui a imagem do processo (código, dados, stack) pelo novo programa, mantendo o mesmo PID — não cria um novo processo. Os descritores de ficheiro sobrevivem ao exec(), a não ser que estejam marcados com FD_CLOEXEC; se exec() tiver sucesso, nunca retorna ao código original.\n🧠 exec() troca a alma, mas mantém o corpo (PID) e os bolsos (fds).",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-05",
+    "topic": "processes",
+    "front": "O que é um processo zombie e como se evita?",
+    "back": "É um processo que já terminou mas cujo pai ainda não chamou wait()/waitpid() para recolher o exit status; a entrada na tabela de processos mantém-se até essa recolha. Evita-se fazendo o pai chamar wait() (ou tratando SIGCHLD) para libertar essa entrada.\n🧠 Zombie = terminou mas o boletim de exit ainda não foi levantado.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-06",
+    "topic": "memory",
+    "front": "Qual a diferença de papel entre MMU e TLB?",
+    "back": "A MMU é o hardware que efetivamente traduz endereços virtuais em físicos, consultando a tabela de páginas do processo em execução. A TLB é uma cache de hardware dessas traduções recentes, que evita percorrer a tabela de páginas completa em cada acesso, acelerando o processo mas sem o substituir.\n🧠 MMU traduz, TLB lembra-se da tradução.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-07",
+    "topic": "memory",
+    "front": "O que acontece quando ocorre um page fault por página em disco?",
+    "back": "A MMU gera um trap (fault) que transfere o controlo para o SO; este carrega a página do disco para memória física, atualiza a tabela de páginas e reexecuta a instrução que causou a falta, agora com sucesso — ao contrário de um trap de system call, que avança para a instrução seguinte.\n🧠 Fault recuperável = repete a jogada; trap = segue em frente.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-08",
+    "topic": "signals",
+    "front": "Porque é que SIGKILL não pode ser ignorado ou tratado por um handler?",
+    "back": "SIGKILL (e SIGSTOP) são tratados sempre pela ação por omissão do kernel, sem possibilidade de bloqueio, ignore ou handler customizado, garantindo que existe sempre uma forma incondicional de terminar qualquer processo, independentemente do seu comportamento face a outros sinais.\n🧠 SIGKILL é a exceção que não aceita exceções.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-09",
+    "topic": "signals",
+    "front": "O que significa uma função ser async-signal-safe e porque write() é preferido a printf() em handlers?",
+    "back": "Uma função é async-signal-safe se pode ser chamada em segurança dentro de um signal handler, mesmo que interrompa outra chamada não relacionada. printf() usa buffers e estado interno da libc que não são reentrantes, podendo corromper-se se o handler interromper outro printf() em curso; write() é uma system call simples e listada como segura pelo POSIX.\n🧠 Dentro do handler, só chames o que está na lista segura.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-10",
+    "topic": "signals",
+    "front": "Qual o papel do campo sa_mask em struct sigaction e o que acontece a sinais repetidos durante um handler?",
+    "back": "sa_mask define sinais adicionais a bloquear temporariamente enquanto o handler corre. Para sinais standard (não real-time), se o mesmo sinal chegar outra vez durante a execução do handler, o kernel apenas marca-o como pendente (um bit) — não é enfileirado — e o handler volta a correr uma única vez depois de retornar.\n🧠 Sinais standard não fazem fila, só levantam a mão pendente.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-11",
+    "topic": "pipes",
+    "front": "Porque é que um pipe deve ser criado antes do fork() e o que garante o PIPE_BUF?",
+    "back": "Criar o pipe antes do fork() permite que o filho herde uma cópia da tabela de descritores do pai, partilhando automaticamente os dois extremos. Escritas até PIPE_BUF bytes são atómicas — não ficam intercaladas com bytes de outras escritas concorrentes — mas isso não garante ordem entre mensagens de processos diferentes.\n🧠 Pipe antes de fork = herança garantida; PIPE_BUF = mensagem inteira ou nada.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-12",
+    "topic": "pipes",
+    "front": "Quando é que uma read() num pipe devolve EOF (0) e quando bloqueia indefinidamente?",
+    "back": "read() devolve 0 (EOF) quando todos os descritores de escrita do pipe foram fechados e não há mais dados no buffer. Se algum processo mantiver, por descuido, um descritor de escrita aberto (mesmo sem escrever), a leitura de um pipe vazio bloqueia indefinidamente, à espera de dados que nunca chegarão.\n🧠 Só há EOF quando a última porta de escrita se fecha.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-13",
+    "topic": "pipes",
+    "front": "Qual a diferença entre dup(fd) e dup2(fd1, fd2), e para que servem em redireção de pipes?",
+    "back": "dup(fd) devolve uma nova referência ao mesmo recurso de fd, usando o menor descritor livre disponível (sem controlo sobre qual). dup2(fd1, fd2) duplica fd1 exatamente para o número fd2 (fechando-o primeiro se necessário) — é esta forma controlada que se usa para, por exemplo, redirecionar stdin/stdout para um extremo de um pipe antes de um exec().\n🧠 dup() escolhe por ti; dup2() tu escolhes o destino.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-14",
+    "topic": "memory",
+    "front": "Qual a sequência correta para criar e usar memória partilhada POSIX, e como se limpa corretamente?",
+    "back": "A sequência é shm_open() → ftruncate() → mmap() (definir o tamanho antes de mapear). Para acesso entre processos, o mapeamento deve usar MAP_SHARED. Na limpeza, chama-se munmap() antes de close() para desligar o processo da região antes de libertar o descritor; shm_unlink() apenas remove o nome — a memória só é libertada quando todos os processos a desmapearem/fecharem.\n🧠 open → truncate → map; e ao fechar: unmap antes de close.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-15",
+    "topic": "sync",
+    "front": "Quais são os três requisitos clássicos para uma solução correta do problema da secção crítica?",
+    "back": "Exclusão mútua (só um processo de cada vez na secção crítica), progresso (a decisão de quem entra não pode ser adiada indefinidamente por processos fora da secção crítica) e espera limitada (bounded waiting — um processo não pode esperar para sempre enquanto outros entram repetidamente). Deteção de deadlock não é um destes requisitos.\n🧠 Exclusão, progresso, espera limitada — as três leis da secção crítica.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-16",
+    "topic": "sync",
+    "front": "Quais são as quatro condições necessárias para deadlock?",
+    "back": "Exclusão mútua, hold-and-wait (deter um recurso enquanto se espera por outro), ausência de preempção sobre os recursos, e espera circular (circular wait). Basta eliminar uma destas condições (por exemplo, com ordenação global de locks, que evita espera circular) para prevenir deadlock.\n🧠 EM-HW-NP-EC: se faltar uma, não há deadlock.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-17",
+    "topic": "sync",
+    "front": "Como funciona o problema dos leitores-escritores e o que causa starvation do escritor na primeira solução?",
+    "back": "Vários leitores podem aceder concorrentemente aos dados, mas um escritor precisa de acesso exclusivo. Na primeira solução clássica, os leitores têm prioridade: enquanto houver leitores ativos ou a chegar continuamente, um escritor à espera nunca consegue entrar, causando starvation do escritor.\n🧠 Leitores em fila indiana nunca deixam o escritor passar.",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-18",
+    "topic": "sync",
+    "front": "O que significa um semáforo inicializado a 0, e como difere de um semáforo binário (mutex-like)?",
+    "back": "Um semáforo a 0 serve para sincronização de eventos: qualquer sem_wait() bloqueia até outro processo fazer sem_post(), sinalizando que um evento ocorreu (ex.: consumidor à espera do primeiro item). Um semáforo binário (inicializado a 1) serve tipicamente para exclusão mútua, como um lock.\n🧠 Semáforo a 0 = \"espera que alguém te avise\"; a 1 = \"lock disponível\".",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-19",
+    "topic": "threads",
+    "front": "O que partilham as threads de um mesmo processo, e o que é cada uma independente?",
+    "back": "Threads partilham código, heap, variáveis globais e recursos do processo (descritores de ficheiro, sinais). Cada thread tem a sua própria stack e o seu próprio estado de CPU (registos, program counter), o que lhe permite executar de forma independente dentro do mesmo espaço de endereçamento.\n🧠 Mesma casa (processo), quartos diferentes (stacks).",
+    "theoryRefs": []
+  },
+  {
+    "id": "fc-cp-20",
+    "topic": "sync",
+    "front": "Porque é necessário usar while(condição) em vez de if(condição) à volta de pthread_cond_wait()?",
+    "back": "pthread_cond_wait() liberta o mutex atomicamente ao bloquear e reacquire-o antes de retornar, mas pode retornar sem a condição desejada ser verdadeira — devido a wakeups espúrios ou porque outra thread já alterou o estado entretanto. Por isso é preciso reverificar a condição num ciclo while, voltando a esperar se ainda não se verificar.\n🧠 cond_wait pode acordar sem motivo — confirma sempre antes de agir.",
+    "theoryRefs": []
   }
 ]
